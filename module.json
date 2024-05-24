@@ -1,0 +1,18 @@
+{
+    "id": "foundry-vtt-trading-module",
+    "title": "Swords and Sandals Trading Helper",
+    "description": "A module meant for the Swords and Sandals campaign to aid the GM in trading.",
+    "authors": [
+        { 
+            "name": "MichaelJBradley",
+            "url": "https://github.com/MichaelJBradley"
+        }
+    ],
+    "version": "0.1.0",
+    "compatibility": {
+        "minimum": "11",
+        "verified": "11"
+    },
+    "license": "LICENSE",
+    "readme": "README.md"
+}

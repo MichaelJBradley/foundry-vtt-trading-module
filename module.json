@@ -14,5 +14,21 @@
         "verified": "11"
     },
     "license": "LICENSE",
-    "readme": "README.md"
+    "readme": "README.md",
+    "scripts": [
+        "scripts/sas-trading.js"
+    ],
+    "templates": [
+        "templates/sas-trading.hbs"
+    ],
+    "styles": [
+        "styles/sas-trading.css"
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "languages/en.json"
+        }
+    ]
 }

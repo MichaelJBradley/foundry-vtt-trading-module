@@ -19,7 +19,8 @@
         "scripts/sas-trading.js"
     ],
     "templates": [
-        "templates/sas-goods-config.hbs"
+        "templates/sas-goods-config.hbs",
+        "templates/sas-base-goods-config.hbs"
     ],
     "styles": [
         "styles/sas-trading.css"

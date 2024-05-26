@@ -27,12 +27,12 @@
                         </option>
                     {{/each}}
                 </select>
-                <button type="button" title="{{localize "SAS-TRADING.settings.config.menu.delete-good"}}" data-action="delete" class="flex0 sas-config-icon-button">
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.goods-menu.delete-good"}}" data-action="delete" class="flex0 sas-config-icon-button">
                     <i class="fas fa-trash"></i>
                 </button>
             </li>
         {{else}}
-            {{localize "SAS-TRADING.settings.config.menu.missing-goods"}}
+            {{localize "SAS-TRADING.settings.config.goods-menu.missing-goods"}}
         {{/each}}
     </ul>
     <ul class="sas-config flexcol">
@@ -55,16 +55,16 @@
                         </option>
                     {{/each}}
                 </select>
-                <button type="button" title="{{localize "SAS-TRADING.settings.config.menu.confirm-create"}}" data-action="confirm-create" class="flex0 sas-config-icon-button">
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.goods-menu.confirm-create"}}" data-action="confirm-create" class="flex0 sas-config-icon-button">
                     <i class="fas fa-check"></i>
                 </button>
-                <button type="button" title="{{localize "SAS-TRADING.settings.config.menu.cancel-create"}}" data-action="cancel-create" class="flex0 sas-config-icon-button">
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.goods-menu.cancel-create"}}" data-action="cancel-create" class="flex0 sas-config-icon-button">
                     <i class="fas fa-times"></i>
                 </button>
             </li>
         {{/each}}
     </ul>
     <button type="button" data-action="create">
-        <i class="fas fa-plus"></i>{{localize "SAS-TRADING.settings.config.menu.create-good"}}
+        <i class="fas fa-plus"></i>{{localize "SAS-TRADING.settings.config.goods-menu.create-good"}}
     </button>
 </form>

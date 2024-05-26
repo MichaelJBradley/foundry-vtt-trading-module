@@ -1,0 +1,70 @@
+<form>
+    <select id="cities", name="selectedCity">
+        {{#each cities}}
+            <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
+                {{this}}
+            </option>
+        {{/each}}
+    </select>
+    <ul class="sas-config flexcol">
+        {{#each goodsByCity as | good |}}
+            <li class="flexrow" data-good-id="{{good.id}}">
+                <p><b>{{good.name}}</b></p>
+                <p>{{localize "SAS-TRADING.demand"}}</p>
+                {{! Group existing trade goods together, so we can just update them with a single call }}
+                <select id="demand-{{good.id}}" name="existing.{{good.id}}.demand">
+                    {{#each ../demands}}
+                        <option value="{{this}}" {{#if (eq good.demand this)}}selected{{/if}}>
+                            {{this}}
+                        </option>
+                    {{/each}}
+                </select>
+                <p>{{localize "SAS-TRADING.scarcity"}}</p>
+                <select id="scarcity-{{good.id}}" name="existing.{{good.id}}.scarcity">
+                    {{#each ../scarcities}}
+                        <option value="{{this}}" {{#if (eq good.scarcity this)}}selected{{/if}}>
+                            {{this}}
+                        </option>
+                    {{/each}}
+                </select>
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.menu.delete-good"}}" data-action="delete" class="flex0 sas-config-icon-button">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </li>
+        {{else}}
+            {{localize "SAS-TRADING.settings.config.menu.missing-goods"}}
+        {{/each}}
+    </ul>
+    <ul class="sas-config flexcol">
+        {{#each newGoods as | newGood | }}
+            <li class="flexrow" data-good-id="{{newGood.id}}" data-good-city="{{../selectedCity}}">
+                <input type="text" value="{{newGood.name}}" name="new.{{newGood.id}}.name" data-dtype="String" />
+                <p>{{localize "SAS-TRADING.demand"}}</p>
+                <select id="demand-{{newGood.id}}" name="new.{{newGood.id}}.demand">
+                    {{#each ../demands}}
+                        <option value="{{this}}" {{#if (eq newGood.demand this)}}selected{{/if}}>
+                            {{this}}
+                        </option>
+                    {{/each}}
+                </select>
+                <p>{{localize "SAS-TRADING.scarcity"}}</p>
+                <select id="scarcity-{{newGood.id}}" name="new.{{newGood.id}}.scarcity">
+                    {{#each ../scarcities}}
+                        <option value="{{this}}" {{#if (eq newGood.scarcity this)}}selected{{/if}}>
+                            {{this}}
+                        </option>
+                    {{/each}}
+                </select>
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.menu.confirm-create"}}" data-action="confirm-create" class="flex0 sas-config-icon-button">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.menu.cancel-create"}}" data-action="cancel-create" class="flex0 sas-config-icon-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </li>
+        {{/each}}
+    </ul>
+    <button type="button" data-action="create">
+        <i class="fas fa-plus"></i>{{localize "SAS-TRADING.settings.config.menu.create-good"}}
+    </button>
+</form>

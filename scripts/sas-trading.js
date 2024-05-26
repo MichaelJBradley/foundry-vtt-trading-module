@@ -153,21 +153,21 @@ class SasTrading {
 
 class SasTradingGoodData {
     /**
-     * Demand is an enum representing the different demand levels of trade goods.
+     * demand is an enum representing the different demand levels of trade goods.
      * @see {SasDemand}
      */
-    static Demand = Object.freeze({
+    static demand = Object.freeze({
         HIGH: 'high',
         AVG: 'avg',
         LOW: 'low'
     })
 
     /**
-     * Scarcity is an enum representing the different scarcity levels of trade
+     * scarcity is an enum representing the different scarcity levels of trade
      * goods.
      * @see {SasScarcity}
      */
-    static Scarcity = Object.freeze({
+    static scarcity = Object.freeze({
         RARE: 'rare',
         COMMON: 'common',
         ABUNDANT: 'abundant'
@@ -485,8 +485,8 @@ class SasTradingConfig extends FormApplication {
             baseGoods: SasTradingBaseGoodData.allBaseGoods,
             cities: SasTradingCitiesData.allCities,
             selectedCity: options.selectedCity,
-            demands: Object.values(SasTradingGoodData.Demand),
-            scarcities: Object.values(SasTradingGoodData.Scarcity),
+            demands: Object.values(SasTradingGoodData.demand),
+            scarcities: Object.values(SasTradingGoodData.scarcity),
             newGoods: this.options.newGoods
         }
     }

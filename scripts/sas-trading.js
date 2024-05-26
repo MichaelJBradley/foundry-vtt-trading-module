@@ -37,16 +37,14 @@
 
 /**
  * SasGoods is a mapping of good IDs to trade goods.
- * @typedef {Object} SasGoods
- * @property {Object.<SasGoodId, SasGood>}
+ * @typedef {{SasGoodId: SasGood}} SasGoods
  */
 
 /**
  * SasBaseGoods is a mapping of trade goods to their values.
  * 
  * Corresponds to the BASE_GOODS setting.
- * @typedef {Object} SasBaseGoods
- * @property {Object.<SasGoodName, number>}
+ * @typedef {{SasGoodName: number}} SasBaseGoods
  */
 
 /**
@@ -111,7 +109,7 @@ class SasTrading {
     /**
      * getSettings is a helper to retrieve a setting with this module's ID.
      * @param {string} settingName 
-     * @returns {*} See SETTINGS for typedefs
+     * @returns {(SasGoods|SasBaseGoods|SasCities)} See SETTINGS for more info.
      */
     static getSetting(settingName) {
         return game.settings.get(this.ID, settingName)
@@ -120,7 +118,7 @@ class SasTrading {
     /**
      * setSetting is a helper to store a setting with this module's ID.
      * @param {string} settingName 
-     * @param {*} data See SETTINGS for typedefs
+     * @param {(SasGoods|SasBaseGoods|SasCities)} data See SETTINGS for typedefs
      */
     static async setSetting(settingName, data) {
         return game.settings.set(this.ID, settingName, data)
@@ -131,7 +129,7 @@ class SasTrading {
     }
 }
 
-class SasTradingData {
+class SasTradingGoodData {
     /**
      * Demand is an enum representing the different demand levels of trade goods.
      * @see {SasDemand}
@@ -209,8 +207,64 @@ class SasTradingData {
         await SasTrading.setSetting(SasTrading.SETTINGS.GOODS, goods)
     }
 
+    /**
+     * deleteGood deletes a good by ID
+     */
+    static async deleteGood(id) {
+        const goods = this.allGoods
+        const updatedGoods = foundry.utils.mergeObject(goods, {[`-=${id}`]: null}, {performDeletions: true})
+        await SasTrading.setSetting(SasTrading.SETTINGS.GOODS, updatedGoods)
+    }
+
+    /**
+     * Get all goods mapped by id.
+     * @returns {SasGoods}
+     */
     static get allGoods() {
         return SasTrading.getSetting(SasTrading.SETTINGS.GOODS)
+    }
+
+    /**
+     * Get all goods mapped by city.
+     * @returns {{SasCityName: {SasGoodName: SasGood}}}
+     */
+    static get goodsByCity() {
+        const goods = this.allGoods
+        const cityGoods = {}
+        Object.entries(goods).forEach(([_, good]) => {
+            const city = good.city
+            if (!cityGoods.hasOwnProperty(city)) {
+                cityGoods[city] = {}
+            }
+            cityGoods[city][good.name] = good
+        })
+        return cityGoods
+    }
+
+    /**
+     * Get all goods mapped by name.
+     * @returns {{SasGoodName: {SasCityName: SasGood}}}
+     */
+    static get goodsByName() {
+        const goods = this.allGoods
+        const namedGoods = {}
+        Object.entries(goods).forEach(([_, good]) => {
+            const name = good.name
+            if (!namedGoods.hasOwnProperty(name)) {
+                namedGoods[name] = {}
+            }
+            namedGoods[name][good.city] = good
+        })
+        return namedGoods
+    }
+
+    /**
+     * getGood is a convenience function to get a good by ID.
+     * @param {SasGoodId} id 
+     * @returns {SasGood}
+     */
+    static getGood(id) {
+        return this.allGoods[id]
     }
 }
 

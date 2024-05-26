@@ -15,12 +15,12 @@
 
 /**
  * SasDemand is a level of the Demand enum.
- * @typedef {Symbol} SasDemand
+ * @typedef {string} SasDemand
  */
 
 /**
  * SasScarcity is an level of the Scarcity enum.
- * @typedef {Symbol} SasScarcity
+ * @typedef {string} SasScarcity
  */
 
 /**
@@ -58,11 +58,16 @@ class SasTrading {
     static ID = 'foundry-vtt-trading-module'
     static LANG = 'SAS-TRADING'
     static FLAGS = {}
-    static TEMPLATES = {}
+    static TEMPLATES = {
+        CONFIG: `modules/${this.ID}/templates/sas-goods-config.hbs`
+    }
     static SETTINGS = {
         GOODS: 'goods',           // see {SasGoods}
         BASE_GOODS: 'base-goods', // see {SasBaseGood}
-        CITIES: 'cities'          // see {SasCities}
+        CITIES: 'cities',         // see {SasCities}
+        // Lang refs
+        CONFIG: 'config',
+        CONFIG_MENU: 'menu'
     }
 
     /**
@@ -103,7 +108,14 @@ class SasTrading {
             type: Object,
             default: []
         })
-        // TODO: register a settings menu to fill stuff in
+        game.settings.registerMenu(this.ID, this.SETTINGS.CONFIG, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.name`,
+            label: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.label`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.hint`,
+            icon: 'fas fa-bars',
+            type: SasTradingConfig,
+            restricted: true
+        })
     }
 
     /**
@@ -124,6 +136,16 @@ class SasTrading {
         return game.settings.set(this.ID, settingName, data)
     }
 
+    /**
+     * localize is a helper to call Foundry's built in i18n localization
+     * function.
+     * @param {string} languageKey 
+     * @returns The localized string
+     */
+    static localize(languageKey) {
+        return game.i18n.localize(languageKey)
+    }
+
     static initialize() {
         this.registerSettings()
     }
@@ -131,24 +153,24 @@ class SasTrading {
 
 class SasTradingGoodData {
     /**
-     * Demand is an enum representing the different demand levels of trade goods.
+     * demand is an enum representing the different demand levels of trade goods.
      * @see {SasDemand}
      */
-    static Demand = Object.freeze({
-        HIGH: Symbol('high'),
-        AVG: Symbol('avg'),
-        LOW: Symbol('low')
+    static demand = Object.freeze({
+        HIGH: 'high',
+        AVG: 'avg',
+        LOW: 'low'
     })
 
     /**
-     * Scarcity is an enum representing the different scarcity levels of trade
+     * scarcity is an enum representing the different scarcity levels of trade
      * goods.
      * @see {SasScarcity}
      */
-    static Scarcity = Object.freeze({
-        RARE: Symbol('rare'),
-        COMMON: Symbol('common'),
-        ABUNDANT: Symbol('abundant')
+    static scarcity = Object.freeze({
+        RARE: 'rare',
+        COMMON: 'common',
+        ABUNDANT: 'abundant'
     })
 
     /**
@@ -171,19 +193,19 @@ class SasTradingGoodData {
      */
     static createGood(good) {
         if (!good.name || !good.city) {
-            SasTrading.log(false, "good must have at least name and city properties", good)
+            SasTrading.log(false, 'good must have at least name and city properties', good)
             return
         }
         if (!good.id) {
             good.id = this.goodId(good.name, good.city)
         } else if (good.id !== this.goodId(good.name, good.city)) {
-            SasTrading.log(false, "good.id '", good.id, "' does not match expected id:", this.goodId(good.name, good.city))
+            SasTrading.log(false, 'good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
             return
         }
 
         const goods = this.allGoods
         if (goods.hasOwnProperty(good.id)) {
-            SasTrading.log(false, "good already exists:", good.id)
+            SasTrading.log(false, 'good already exists:', good.id)
             // TODO: Application Warning? Error?
             return
         }
@@ -204,27 +226,27 @@ class SasTradingGoodData {
     static updateGood(id, good) {
         // Validate the provided good.id is correct
         if (good.id && good.id !== id) {
-            SasTrading.log(false, "good.id does not match id:", id, good)
+            SasTrading.log(false, 'good.id does not match id:', id, good)
             return
         }
         // If good name and city are provided, they must result in the same ID
         if ((good.name && good.city) && id !== this.goodId(good.name, good.city)) {
-            SasTrading.log(false, "provided good name and city do not match id:", id, good)
+            SasTrading.log(false, 'provided good name and city do not match id:', id, good)
             return
         }
         const goods = this.allGoods
         if (!goods.hasOwnProperty(id)) {
-            SasTrading.log(false, "good does not exist:", id)
+            SasTrading.log(false, 'good does not exist:', id)
             // TODO: Application warning? Error?
             return
         }
         // Name and city can never change
         if (good.name && good.name !== goods[id].name) {
-            SasTrading.log(false, "cannot change name:", "provided:", good, "existing:", goods[id])
+            SasTrading.log(false, 'cannot change name:', 'provided:', good, 'existing:', goods[id])
             return
         }
         if (good.city && good.city !== goods[id].city) {
-            SasTrading.log(false, "cannot change city:", "provided:", good, "existing:", goods[id])
+            SasTrading.log(false, 'cannot change city:', 'provided:', good, 'existing:', goods[id])
             return
         }
 
@@ -234,13 +256,25 @@ class SasTradingGoodData {
     }
 
     /**
+     * updateGoods updates multiple goods at once.
+     * 
+     * It performs no error checking, and is expected to be only ever be called
+     * from SasTradingConfig#_updateObject.
+     * @param {SasGoods} updateData 
+     */
+    static updateGoods(updateData) {
+        const updatedGoods = foundry.utils.mergeObject(this.allGoods, updateData)
+        SasTrading.setSetting(SasTrading.SETTINGS.GOODS, updatedGoods)
+    }
+
+    /**
      * deleteGood deletes a good by ID
      * @param {SasGoodId} id
      */
     static deleteGood(id) {
         const goods = this.allGoods
         if (!goods.hasOwnProperty(id)) {
-            SasTrading.log(false, "good does not exist:", id)
+            SasTrading.log(false, 'good does not exist:', id)
             // TODO: Application warning? Error?
             return
         }
@@ -298,7 +332,7 @@ class SasTradingGoodData {
     static getGood(id) {
         const goods = this.allGoods
         if (!goods.hasOwnProperty(id)) {
-            SasTrading.log(false, "good with does not exist with id:", id)
+            SasTrading.log(false, 'good with does not exist with id:', id)
             return
         }
         return goods[id]
@@ -315,7 +349,7 @@ class SasTradingBaseGoodData {
     static createBaseGood(goodName, baseValue) {
         const baseGoods = this.allBaseGoods
         if (baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.log(false, "base good already exists:", goodName)
+            SasTrading.log(false, 'base good already exists:', goodName)
             return
         }
 
@@ -331,7 +365,7 @@ class SasTradingBaseGoodData {
     static updateBaseGood(goodName, baseValue) {
         const baseGoods = this.allBaseGoods
         if (!baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.log(false, "base good does not exist with name:", goodName)
+            SasTrading.log(false, 'base good does not exist with name:', goodName)
             return
         }
 
@@ -347,7 +381,7 @@ class SasTradingBaseGoodData {
     static deleteBaseGood(goodName) {
         const baseGoods = this.allBaseGoods
         if (!baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.log(false, "base good does not exist with name:", goodName)
+            SasTrading.log(false, 'base good does not exist with name:', goodName)
             return
         }
 
@@ -363,7 +397,7 @@ class SasTradingBaseGoodData {
     static getBaseGood(goodName) {
         const baseGoods = this.allBaseGoods
         if (!baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.log(false, "base good does not exist with name:", goodName)
+            SasTrading.log(false, 'base good does not exist with name:', goodName)
             return
         }
         return baseGoods[goodName]
@@ -388,7 +422,7 @@ class SasTradingCitiesData {
     static createCity(cityName) {
         const cities = this.allCities
         if (cities.includes(cityName)) {
-            SasTrading.log(false, "city already exists:", cityName)
+            SasTrading.log(false, 'city already exists:', cityName)
             return
         }
 
@@ -399,7 +433,7 @@ class SasTradingCitiesData {
     static deleteCity(cityName) {
         const cities = this.allCities
         if (!cities.includes(cityName)) {
-            SasTrading.log(false, "city does not exist with name:", cityName)
+            SasTrading.log(false, 'city does not exist with name:', cityName)
             return
         }
 
@@ -413,6 +447,137 @@ class SasTradingCitiesData {
      */
     static get allCities() {
         return SasTrading.getSetting(SasTrading.SETTINGS.CITIES)
+    }
+
+    /**
+     * Get a list of all cities sorted in alphabetical order.
+     */
+    static get allCitiesSorted() {
+        return this.allCities.sort()
+    }
+}
+
+class SasTradingConfig extends FormApplication {
+    static get defaultOptions() {
+        const defaults = super.defaultOptions
+
+        const overrides = {
+            height: 'auto',
+            width: '500',
+            id: 'sas-trading-config',
+            title: SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_MENU}.title`),
+            template: SasTrading.TEMPLATES.CONFIG,
+            closeOnSubmit: false,
+            submitOnChange: true,
+            resizable: true,
+            selectedCity: SasTradingCitiesData.allCitiesSorted[0],
+            newGoods: {},
+        }
+        const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
+
+        return mergedOptions
+    }
+
+    getData(options) {
+        const goodsByCity = SasTradingGoodData.goodsByCity[options.selectedCity] || {}
+        return {
+            goodsByCity: goodsByCity,
+            baseGoods: SasTradingBaseGoodData.allBaseGoods,
+            cities: SasTradingCitiesData.allCities,
+            selectedCity: options.selectedCity,
+            demands: Object.values(SasTradingGoodData.demand),
+            scarcities: Object.values(SasTradingGoodData.scarcity),
+            newGoods: this.options.newGoods
+        }
+    }
+
+    async _updateObject(event, formData) {
+        const expandedData = foundry.utils.expandObject(formData)
+        SasTrading.log(false, 'saving', { expandedData })
+        SasTrading.log(false, 'update object event', event)
+
+        // 1. Update existing goods data
+        // No need to update if there aren't any existing goods or the existing is empty for some reason
+        if (!expandedData.existing || Object.keys(expandedData.existing) === 0) {
+            SasTrading.log(false, 'form data for existing trade goods was empty')
+        } else {
+            await SasTradingGoodData.updateGoods(expandedData.existing)
+        }
+
+        // 2. Copy new goods fields
+        if (!expandedData.new || Object.keys(expandedData.new) === 0) {
+            SasTrading.log(false, 'form data for new trade goods was empty')
+        } else {
+            this.options.newGoods = foundry.utils.mergeObject(this.options.newGoods, expandedData.new)
+        }
+
+        // 3. Update selected city
+        this.options.selectedCity = expandedData.selectedCity
+
+        this.render()
+    }
+
+    activateListeners(html) {
+        super.activateListeners(html)
+        html.on('click', '[data-action]', this._handleButtonClick.bind(this))
+    }
+
+    async _handleButtonClick(event) {
+        SasTrading.log(false, 'button click event', event)
+        const clickedElement = $(event.currentTarget)
+        const action = clickedElement.data().action
+        const goodId = clickedElement.parents('[data-good-id]')?.data()?.goodId
+
+        switch (action) {
+            case 'create':
+                // A new good will be converted into SasGood, once the confirm-create action is clicked.
+                // Until then, a random ID can be used to handle new goods.
+                const newGoodId = foundry.utils.randomID(16)
+                this.options.newGoods[newGoodId] = {id: newGoodId}
+                this.render()
+                break
+            case 'delete':
+                const confirmed = await Dialog.confirm({
+                    title: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm.title`),
+                    content: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm.content`)
+                })
+
+                if (confirmed) {
+                    await SasTradingGoodData.deleteGood(goodId)
+                    this.render()
+                }
+                break
+            case 'confirm-create':
+                const newGood = this.options.newGoods[goodId]
+                if (!newGood.name) {
+                    SasTrading.log(false, "cannot create trade good without a name", newGood)
+                    break
+                }
+                const city = clickedElement.parents('[data-good-city]')?.data()?.goodCity
+                await SasTradingGoodData.createGood({
+                    name: newGood.name,
+                    city: city,
+                    demand: newGood.demand,
+                    scarcity: newGood.scarcity
+                })
+                // Delete the new good from the list now that it exists in the trade goods list
+                this.deleteNewGood(goodId)
+                
+                this.render()
+                break
+            case 'cancel-create':
+                this.deleteNewGood(goodId)
+                this.render()
+                break
+        }
+    }
+
+    /**
+     * Helper to delete new goods from the list.
+     * @param {string} newGoodId 
+     */
+    deleteNewGood(newGoodId) {
+        this.options.newGoods = foundry.utils.mergeObject(this.options.newGoods, {[`-=${newGoodId}`]: null}, {performDeletions: true})
     }
 }
 

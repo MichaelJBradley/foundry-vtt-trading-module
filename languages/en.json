@@ -1,5 +1,27 @@
 {
     "SAS-TRADING": {
-
+        "demand": "Demand",
+        "scarcity": "Supply",
+        "settings": {
+            "config": {
+                "name": "Configure trade goods",
+                "label": "Configure",
+                "hint": "Add, remove, and update trade goods by city",
+                "menu": {
+                    "title": "Trade goods config",
+                    "create-good": "Create trade good",
+                    "delete-good": "Delete trade good",
+                    "confirm-create": "Confirm trade good creation. Name cannot be modified after.",
+                    "cancel-create": "Cancel trade cood creation",
+                    "missing-goods": "No trade goods configured for this city"
+                }
+            }
+        },
+        "confirms": {
+            "delete-confirm": {
+                "title": "Delete trade good",
+                "content": "Are you sure you want to delete the trade good? This cannot be undone."
+            }
+        }
     }
 }

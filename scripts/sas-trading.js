@@ -369,8 +369,50 @@ class SasTradingBaseGoodData {
         return baseGoods[goodName]
     }
 
+    /**
+     * Get all trade goods' base values, keyed by good name.
+     * @returns {SasBaseGoods}
+     */
     static get allBaseGoods() {
         return SasTrading.getSetting(SasTrading.SETTINGS.BASE_GOODS)
+    }
+}
+
+class SasTradingCitiesData {
+    /**
+     * createCity adds a new city to the list.
+     * 
+     * If a city already exists, it does nothing.
+     * @param {SasCityName} cityName 
+     */
+    static createCity(cityName) {
+        const cities = this.allCities
+        if (cities.includes(cityName)) {
+            SasTrading.log(false, "city already exists:", cityName)
+            return
+        }
+
+        cities.push(cityName)
+        return SasTrading.setSetting(SasTrading.SETTINGS.CITIES, cities)
+    }
+
+    static deleteCity(cityName) {
+        const cities = this.allCities
+        if (!cities.includes(cityName)) {
+            SasTrading.log(false, "city does not exist with name:", cityName)
+            return
+        }
+
+        const updatedCities = cities.filter(city => city !== cityName )
+        return SasTrading.setSetting(SasTrading.SETTINGS.CITIES, updatedCities)
+    }
+
+    /**
+     * Get a list of all cities.
+     * @returns {SasCities}
+     */
+    static get allCities() {
+        return SasTrading.getSetting(SasTrading.SETTINGS.CITIES)
     }
 }
 

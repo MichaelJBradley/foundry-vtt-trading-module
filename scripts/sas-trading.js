@@ -169,7 +169,7 @@ class SasTradingGoodData {
      * The bare minimum to define a new good is name and city.
      * @param {SasGood} good 
      */
-    static async createGood(good) {
+    static createGood(good) {
         if (!good.name || !good.city) {
             SasTrading.log(false, "good must have at least name and city properties", good)
             return
@@ -189,7 +189,7 @@ class SasTradingGoodData {
         }
 
         goods[good.id] = good
-        await SasTrading.setSetting(SasTrading.SETTINGS.GOODS, goods)
+        return SasTrading.setSetting(SasTrading.SETTINGS.GOODS, goods)
     }
 
     /**
@@ -201,7 +201,7 @@ class SasTradingGoodData {
      * @param {SasGoodId} id 
      * @param {SasGood} good 
      */
-    static async updateGood(id, good) {
+    static updateGood(id, good) {
         // Validate the provided good.id is correct
         if (good.id && good.id !== id) {
             SasTrading.log(false, "good.id does not match id:", id, good)
@@ -230,14 +230,14 @@ class SasTradingGoodData {
 
         const updatedGood = foundry.utils.mergeObject(goods[id], good)
         goods[id] = updatedGood
-        await SasTrading.setSetting(SasTrading.SETTINGS.GOODS, goods)
+        return SasTrading.setSetting(SasTrading.SETTINGS.GOODS, goods)
     }
 
     /**
      * deleteGood deletes a good by ID
      * @param {SasGoodId} id
      */
-    static async deleteGood(id) {
+    static deleteGood(id) {
         const goods = this.allGoods
         if (!goods.hasOwnProperty(id)) {
             SasTrading.log(false, "good does not exist:", id)
@@ -245,7 +245,7 @@ class SasTradingGoodData {
             return
         }
         const updatedGoods = foundry.utils.mergeObject(goods, {[`-=${id}`]: null}, {performDeletions: true})
-        await SasTrading.setSetting(SasTrading.SETTINGS.GOODS, updatedGoods)
+        return SasTrading.setSetting(SasTrading.SETTINGS.GOODS, updatedGoods)
     }
 
     /**
@@ -296,7 +296,81 @@ class SasTradingGoodData {
      * @returns {SasGood}
      */
     static getGood(id) {
-        return this.allGoods[id]
+        const goods = this.allGoods
+        if (!goods.hasOwnProperty(id)) {
+            SasTrading.log(false, "good with does not exist with id:", id)
+            return
+        }
+        return goods[id]
+    }
+}
+
+class SasTradingBaseGoodData {
+
+    /**
+     * createBaseGood adds a new trade good with its base value.
+     * @param {SasGoodName} goodName 
+     * @param {number} baseValue 
+     */
+    static createBaseGood(goodName, baseValue) {
+        const baseGoods = this.allBaseGoods
+        if (baseGoods.hasOwnProperty(goodName)) {
+            SasTrading.log(false, "base good already exists:", goodName)
+            return
+        }
+
+        baseGoods[goodName] = baseValue
+        return SasTrading.setSetting(SasTrading.SETTINGS.BASE_GOODS, baseGoods)
+    }
+
+    /**
+     * updateBaseGood updates the base value of a trade good.
+     * @param {SasGoodName} goodName 
+     * @param {number} baseValue 
+     */
+    static updateBaseGood(goodName, baseValue) {
+        const baseGoods = this.allBaseGoods
+        if (!baseGoods.hasOwnProperty(goodName)) {
+            SasTrading.log(false, "base good does not exist with name:", goodName)
+            return
+        }
+
+        baseGoods[goodName] = baseValue
+        return SasTrading.setSetting(SasTrading.SETTINGS.BASE_GOODS, baseGoods)
+    }
+
+    /**
+     * deleteBaseGood deletes a trade good from the base value list.
+     * @param {SasGoodName} goodName 
+     * @returns 
+     */
+    static deleteBaseGood(goodName) {
+        const baseGoods = this.allBaseGoods
+        if (!baseGoods.hasOwnProperty(goodName)) {
+            SasTrading.log(false, "base good does not exist with name:", goodName)
+            return
+        }
+
+        const updatedBaseGoods = foundry.utils.mergeObject(baseGoods, {[`-=${goodName}`]: null}, {performDeletions: true})
+        return SasTrading.setSetting(SasTrading.SETTINGS.BASE_GOODS, updatedBaseGoods)
+    }
+
+    /**
+     * getBaseGood gets the base value of a trade good.
+     * @param {SasGoodName} goodName 
+     * @returns {number}
+     */
+    static getBaseGood(goodName) {
+        const baseGoods = this.allBaseGoods
+        if (!baseGoods.hasOwnProperty(goodName)) {
+            SasTrading.log(false, "base good does not exist with name:", goodName)
+            return
+        }
+        return baseGoods[goodName]
+    }
+
+    static get allBaseGoods() {
+        return SasTrading.getSetting(SasTrading.SETTINGS.BASE_GOODS)
     }
 }
 

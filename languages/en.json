@@ -2,18 +2,32 @@
     "SAS-TRADING": {
         "demand": "Demand",
         "scarcity": "Supply",
+        "name": "Name",
+        "value": "Value",
         "settings": {
             "config": {
-                "name": "Configure trade goods",
-                "label": "Configure",
-                "hint": "Add, remove, and update trade goods by city",
-                "menu": {
+                "goods-menu": {
+                    "name": "Configure trade goods",
+                    "label": "Trade goods",
+                    "hint": "Add, remove, and update trade goods by city",
                     "title": "Trade goods config",
                     "create-good": "Create trade good",
                     "delete-good": "Delete trade good",
                     "confirm-create": "Confirm trade good creation. Name cannot be modified after.",
-                    "cancel-create": "Cancel trade cood creation",
+                    "cancel-create": "Cancel trade good creation",
                     "missing-goods": "No trade goods configured for this city"
+                },
+                "base-goods-menu": {
+                    "name": "Configure base values",
+                    "label": "Base values",
+                    "hint": "Add, remove, and update trade goods' base values globally",
+                    "title": "Base value config",
+                    "name-title": "The name of the trade good",
+                    "value-title": "The base value of the trade good as a whole number",
+                    "create-good": "Create trade good",
+                    "confirm-create": "Confirm trade good creation. Name cannot be modified after.",
+                    "cancel-create": "Cancel trade good creation",
+                    "missing-goods": "No trade goods configured"
                 }
             }
         },

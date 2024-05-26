@@ -1,0 +1,35 @@
+<form>
+    <ul class="sas-config flexcol">
+        {{#each baseGoods as | baseGood |}}
+            <li class="flexrow" data-base-good-name="{{baseGood.name}}">
+                <p class="flex2"><b>{{baseGood.name}}</b></p>
+                <p class="flex0">{{localize "SAS-TRADING.value"}}</p>
+                <input type="number" value="{{baseGood.value}}" name="existing.{{baseGood.name}}" data-dtype="Number" title="{{localize "SAS-TRADING.settings.config.base-goods-menu.value-title"}}" />
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.base-goods-menu.delete-good"}}" data-action="delete" class="sas-config-icon-button flex0">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </li>
+        {{else}}
+            {{localize "SAS-TRADING.settings.config.base-goods-menu.missing-goods"}}
+        {{/each}}
+    </ul>
+    <ul class="sas-config flexcol">
+        {{#each newGoods as | newGood |}}
+            <li class="flexrow" data-new-good-id="{{newGood.id}}">
+                <p class="flex0">{{localize "SAS-TRADING.name"}}</p>
+                <input type="text" value="{{newGood.name}}" name="new.{{newGood.id}}.name" data-dtype="String" title="{{localize "SAS-TRADING.settings.config.base-goods-menu.name-title"}}" />
+                <p class="flex0">{{localize "SAS-TRADING.value"}}</p>
+                <input type="number" value="{{newGood.value}}" name="new.{{newGood.id}}.value" data-dtype="Number" title="{{localize "SAS-TRADING.settings.config.base-goods-menu.value-title"}}" />
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.base-goods-menu.confirm-create"}}" data-action="confirm-create" class="flex0 sas-config-icon-button">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.base-goods-menu.cancel-create"}}" data-action="cancel-create" class="flex0 sas-config-icon-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </li>
+        {{/each}}
+    </ul>
+    <button type="button" data-action="create">
+        <i class="fas fa-plus"></i>{{localize "SAS-TRADING.settings.config.base-goods-menu.create-good"}}
+    </button>
+</form>

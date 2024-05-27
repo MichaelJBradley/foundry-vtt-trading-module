@@ -61,7 +61,8 @@ class SasTrading {
     static TEMPLATES = {
         CONFIG_GOODS: `modules/${this.ID}/templates/sas-goods-config.hbs`,
         CONFIG_BASE: `modules/${this.ID}/templates/sas-base-goods-config.hbs`,
-        CONFIG_CITIES: `modules/${this.ID}/templates/sas-cities-config.hbs` 
+        CONFIG_CITIES: `modules/${this.ID}/templates/sas-cities-config.hbs`,
+        MENU: `modules/${this.ID}/templates/sas-trading-menu.hbs`
     }
     static SETTINGS = {
         GOODS: 'goods',           // see {SasGoods}
@@ -73,6 +74,15 @@ class SasTrading {
         CONFIG_BASE: 'base-goods-menu',
         CONFIG_CITIES: 'cities-menu'
     }
+    static CONTROLS = {
+        TOOLS: 'tools',
+        TOOLS_BUTTON: 'tool-button'
+    }
+    static MENU = {
+        TRADE: 'trade-menu',
+        TRADE_OVERVIEW: 'overview'
+    }
+    static GM_ROLE = 4
 
     /**
      * log to console prefixed with ID.
@@ -168,6 +178,29 @@ class SasTrading {
 
     static initialize() {
         this.registerSettings()
+        this.tradingMenu = new SasTradingMenu()
+        
+        // Set up the tool button to open the trading menu
+        Hooks.on('getSceneControlButtons', buttons => {
+            if (game.users.current.role !== SasTrading.GM_ROLE) {
+                return
+            }
+            const noteButtons = buttons.filter(button => button.name === 'notes')
+            if (!noteButtons || noteButtons.length === 0) {
+                SasTrading.log(false, 'could not find the notes control button')
+                return
+            }
+            const noteButton = noteButtons[0]
+            const tradingToolButton = {
+                button: true,
+                icon: "fa-solid fa-usd",
+                name: SasTrading.ID,
+                onClick: () => SasTrading.tradingMenu.render(true),
+                title: `${SasTrading.LANG}.controls.${SasTrading.CONTROLS.TOOLS}.${SasTrading.CONTROLS.TOOLS_BUTTON}`,
+                visible: true
+            }
+            noteButton.tools.push(tradingToolButton)
+        })
     }
 }
 
@@ -828,6 +861,46 @@ class SasTradingCitiesConfig extends FormApplication {
      */
     deleteNewCity(newCityId) {
         this.options.newCities = foundry.utils.mergeObject(this.options.newCities, {[`-=${newCityId}`]: null}, {performDeletions: true})
+    }
+}
+
+class SasTradingMenu extends FormApplication {
+    static get defaultOptions() {
+        const defaults = super.defaultOptions
+        const overrides = {
+            height: 'auto',
+            width: '600',
+            id: 'sas-trading-menu',
+            title: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_OVERVIEW}.title`),
+            template: SasTrading.TEMPLATES.MENU,
+            closeOnSubmit: false,
+            submitOnChange: true,
+            resizable: true,
+            selectedCity: SasTradingCitiesData.allCitiesSorted[0],
+        }
+        const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
+
+        return mergedOptions
+    }
+
+    getData(options) {
+        const goodsByCity = SasTradingGoodData.goodsByCity[options.selectedCity] || {}
+        SasTrading.log(false, 'goods', goodsByCity, 'for city', options.selectedCity)
+        return {
+            goodsByCity: goodsByCity,
+            cities: SasTradingCitiesData.allCitiesSorted,
+            selectedCity: options.selectedCity
+        }
+    }
+
+    async _updateObject(event, formData) {
+        const expandedData = foundry.utils.expandObject(formData)
+        SasTrading.log(false, 'saving', expandedData)
+
+        // Update selected city
+        this.options.selectedCity = expandedData.selectedCity
+
+        this.render()
     }
 }
 

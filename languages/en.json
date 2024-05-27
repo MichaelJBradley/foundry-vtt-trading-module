@@ -2,6 +2,7 @@
     "SAS-TRADING": {
         "demand": "Demand",
         "scarcity": "Supply",
+        "good": "Trade good",
         "name": "Name",
         "value": "Value",
         "settings": {
@@ -43,6 +44,13 @@
                 }
             }
         },
+        "trade-menu": {
+            "overview": {
+                "title": "Swords & Sandals trading menu",
+                "select-city": "Select city:",
+                "missing-goods": "No trade goods configured for this city. Configure them in the module's settings first."
+            }
+        },
         "confirms": {
             "delete-confirm-good": {
                 "title": "Delete trade good",
@@ -51,6 +59,11 @@
             "delete-confirm-city": {
                 "title": "Delete city",
                 "content": "Are you sure you want to delete the city? This cannot be undone."
+            }
+        },
+        "controls": {
+            "tools": {
+                "tool-button": "Open Swords & Sandals trading menu"
             }
         }
     }

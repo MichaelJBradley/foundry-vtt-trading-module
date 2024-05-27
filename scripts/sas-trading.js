@@ -654,7 +654,7 @@ class SasTradingBaseGoodConfig extends FormApplication {
         } else {
             // Sanitize form data here because updateBaseGoods doesn't
             // If any of the values aren't a number, drop them completely
-            const badValues = Object.entries(expandedData.existing).filter(([name, value]) => {
+            const badValues = Object.entries(expandedData.existing).filter(([_, value]) => {
                 return typeof value !== 'number'
             })
             if (badValues.length > 0) {
@@ -670,7 +670,6 @@ class SasTradingBaseGoodConfig extends FormApplication {
         if (!expandedData.new || Object.keys(expandedData.new).length === 0) {
             SasTrading.log(false, 'form data for new trade good base values was empty')
         } else {
-            // TODO: Sanitize new goods' values
             this.options.newGoods = foundry.utils.mergeObject(this.options.newGoods, expandedData.new)
         }
 
@@ -713,6 +712,10 @@ class SasTradingBaseGoodConfig extends FormApplication {
                 }
                 if (!newGood.value) {
                     SasTrading.log(false, 'cannot create trade good without a value', newGood)
+                    break
+                }
+                if (typeof newGood.value !== 'number') {
+                    SasTrading.log(false, 'trade good must have a number value', newGood)
                     break
                 }
                 await SasTradingBaseGoodData.createBaseGood(newGood.name, newGood.value)

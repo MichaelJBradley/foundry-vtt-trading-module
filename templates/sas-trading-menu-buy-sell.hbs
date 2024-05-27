@@ -1,0 +1,65 @@
+<div class="flexcol">
+    <div class="flexrow">
+        <div class="flexcol">
+            <div class="flexrow">
+                <p>{{localize "SAS-TRADING.select-city"}}</p>
+                <select id="buy-sell-cities" name="buySell.selectedCity">
+                    {{#each cities as | cities |}}
+                        <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
+                            {{this}}
+                        </option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="flexrow">
+                <p>{{localize "SAS-TRADING.select-good"}}</p>
+                <select id="buy-sell-goods" name="buySell.selectedGood">
+                    {{#each goodNames as | goodName |}}
+                        <option value="{{this}}" {{#if (eq ../selectedGoodName this)}}selected{{/if}}>
+                            {{this}}
+                        </option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="flexrow">
+                <p>{{localize "SAS-TRADING.trade-menu.diplomacy-roll"}}</p>
+                <input type="number" name="buySell.diplomacyRoll" data-dtype="Number" value="{{diplomacyRoll}}"/>
+            </div>
+            <div class="flexrow">
+                <input type="radio" id="buy-sell-buy" name="buySell.choice" value="buy" {{#if selectedBuy}}selected{{/if}} />
+                <label for="buy-sell-buy">{{localize "SAS-TRADING.trade-menu.buy-sell.buy"}}</label>
+                <input type="radio" id="buy-sell-sell" name="buySell.choice" value="sell" {{#unless selectedBuy}}selected{{/unless}} />
+                <label for="buy-sell-sell">{{localize "SAS-TRADING.trade-menu.buy-sell.sell"}}</label>
+            </div>
+        </div>
+        <div class="flexcol">
+            <table class="sas-menu-mini-table">
+                {{#if selectedGood}}
+                    <tr>
+                        <th class="sas-menu-table-left-column sas-menu-table-header"></th>
+                        <th class="sas-menu-table-header">{{selectedGood.name}}</th>
+                    </tr>
+                    <tr>
+                        <td class="sas-menu-table-left-column">{{localize "SAS-TRADING.value"}}</td>
+                        <td class="sas-menu-table-data">{{selectedGood.value}}</td>
+                    </tr>
+                    <tr>
+                        <td class="sas-menu-table-left-column">{{localize "SAS-TRADING.demand"}}</td>
+                        <td class="sas-menu-table-data">{{selectedGood.demand}}</td>
+                    </tr>
+                    <tr>
+                        <td class="sas-menu-table-left-column">{{localize "SAS-TRADING.scarcity"}}</td>
+                        <td class="sas-menu-table-data">{{selectedGood.scarcity}}</td>
+                    </tr>
+                {{else}}
+                    <tr>
+                        <th>{{localize "SAS-TRADING.good"}}</th>
+                    </tr>
+                    <tr>
+                        <td class="sas-menu-table-data">{{localize "SAS-TRADING.trade-menu.no-good-selected"}}</td>
+                    </tr>
+                {{/if}}
+            </table>
+        </div>
+    </div>
+</div>

@@ -50,6 +50,7 @@
         "trade-menu": {
             "title": "Swords & Sandals trading menu",
             "diplomacy-roll": "Diplomacy roll:",
+            "no-good-selected": "Select a good from the left to get started",
             "overview": {
                 "tab-title": "Overview",
                 "missing-goods": "No trade goods configured for this city. Configure them in the module's settings first."
@@ -63,6 +64,11 @@
                     "content-failure": "The rumors were innaccurate",
                     "label": "Neat"
                 }
+            },
+            "buy-sell": {
+                "tab-title": "Buy / Sell",
+                "buy": "Buy",
+                "sell": "Sell"
             }
         },
         "confirms": {

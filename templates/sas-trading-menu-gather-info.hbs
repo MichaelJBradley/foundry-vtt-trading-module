@@ -14,7 +14,7 @@
         <p>{{localize "SAS-TRADING.select-good"}}</p>
         <select id="gather-info-goods" name="gatherInfo.selectedGood">
             {{#each goodNames as | goodName |}}
-                <option value="{{this}}" {{#if (eq ../selectedGood this)}}selected{{/if}}>
+                <option value="{{this}}" {{#if (eq ../selectedGoodName this)}}selected{{/if}}>
                     {{this}}
                 </option>
             {{/each}}

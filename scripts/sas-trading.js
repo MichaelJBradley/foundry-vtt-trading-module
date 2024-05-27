@@ -65,7 +65,8 @@ class SasTrading {
         MENU: `modules/${this.ID}/templates/sas-trading-menu.hbs`,
         PARTIALS: {
             MENU_OVERVIEW: `modules/${this.ID}/templates/sas-trading-menu-overview.hbs`,
-            MENU_GATHER_INFO: `modules/${this.ID}/templates/sas-trading-menu-gather-info.hbs`
+            MENU_GATHER_INFO: `modules/${this.ID}/templates/sas-trading-menu-gather-info.hbs`,
+            MENU_BUY_SELL: `modules/${this.ID}/templates/sas-trading-menu-buy-sell.hbs`
         }
     }
     static SETTINGS = {
@@ -85,7 +86,8 @@ class SasTrading {
     static MENU = {
         TRADE: 'trade-menu',
         TRADE_OVERVIEW: 'overview',
-        TRADE_GATHER_INFO: 'gather-info'
+        TRADE_GATHER_INFO: 'gather-info',
+        TRADE_BUY_SELL: 'buy-sell'
     }
     static GM_ROLE = 4
 
@@ -190,7 +192,8 @@ class SasTrading {
         //   2. Register them as partials with Handlebars
         loadTemplates([
             SasTrading.TEMPLATES.PARTIALS.MENU_OVERVIEW, 
-            SasTrading.TEMPLATES.PARTIALS.MENU_GATHER_INFO
+            SasTrading.TEMPLATES.PARTIALS.MENU_GATHER_INFO,
+            SasTrading.TEMPLATES.PARTIALS.MENU_BUY_SELL
         ])
         
         // Set up the tool button to open the trading menu
@@ -885,8 +888,16 @@ class SasTradingMenu extends FormApplication {
     
     static TABS = {
         OVERVIEW: 'sas-trading-menu-overview',
-        GATHER_INFO: 'sas-trading-menu-gather-info'
+        GATHER_INFO: 'sas-trading-menu-gather-info',
+        BUY_SELL: 'sas-trading-menu-buy-sell'
     }
+    /**
+     * BUY_SELL defines the options for the buy/sell radio buttons.
+     */
+    static BUY_SELL = Object.freeze({
+        BUY: 'buy',
+        SELL: 'sell'
+    })
 
     static BASE_GATHER_INFO_ACCURACY = 70
 
@@ -895,7 +906,10 @@ class SasTradingMenu extends FormApplication {
 
         const selectedCity = SasTradingCitiesData.allCitiesSorted[0]
         const goodsByCity = SasTradingGoodData.goodsByCity[selectedCity]
-        const selectedGood = goodsByCity ? Object.keys(goodsByCity)[0] : ""
+        const selectedGoodName = goodsByCity ? Object.keys(goodsByCity)[0] : ""
+        // If there's no good selected, set it to undefined. This way the handlebars template can check
+        // and display a placeholder table until one is selected.
+        const selectedGood = selectedGoodName ? goodsByCity[selectedGoodName] : undefined
 
         const overrides = {
             height: 'auto',
@@ -924,11 +938,18 @@ class SasTradingMenu extends FormApplication {
                     id: this.TABS.GATHER_INFO,
                     title: `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.tab-title`,
                     template: SasTrading.TEMPLATES.PARTIALS.MENU_GATHER_INFO
+                },
+                {
+                    id: this.TABS.BUY_SELL,
+                    title: `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_BUY_SELL}.tab-title`,
+                    template: SasTrading.TEMPLATES.PARTIALS.MENU_BUY_SELL
                 }
             ],
             activeTab: this.TABS.OVERVIEW,
             selectedCity: selectedCity,
+            selectedGoodName: selectedGoodName,
             selectedGood: selectedGood,
+            selectedBuy: false
         }
         const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
 
@@ -942,7 +963,17 @@ class SasTradingMenu extends FormApplication {
         goodNames.forEach(name => {
             goodsByCity[name].value = baseGoods[name]
         })
+        // Try updating the selected good name based on the list if there isn't one already
+        // This way, if a city has no goods and a new city is selected with goods, it pulls the first
+        // good from the list.
+        // If a good is already selected, just carry it over
+        const selectedGoodName = this.options.selectedGoodName ? this.options.selectedGoodName :
+            (goodsByCity ? Object.keys(goodsByCity)[0] : "")
+        // If there's no good selected, set it to undefined. This way the handlebars template can check
+        // and display a placeholder table until one is selected.
+        const selectedGood = selectedGoodName ? goodsByCity[selectedGoodName] : undefined
         SasTrading.log(false, 'goods', goodsByCity, 'for city', options.selectedCity)
+        SasTrading.log(false, 'selected good', selectedGood)
         return {
             tabs: options.tabData,
             goodsByCity: goodsByCity,
@@ -950,8 +981,10 @@ class SasTradingMenu extends FormApplication {
             numGoods: goodNames.length,
             cities: SasTradingCitiesData.allCitiesSorted,
             selectedCity: options.selectedCity,
-            selectedGood: options.selectedGood,
-            diplomacyRoll: options.diplomacyRoll
+            selectedGoodName: selectedGoodName,
+            selectedGood: selectedGood,
+            diplomacyRoll: options.diplomacyRoll,
+            selectedBuy: options.selectedBuy
         }
     }
 
@@ -961,6 +994,8 @@ class SasTradingMenu extends FormApplication {
         const expandedData = foundry.utils.expandObject(formData)
         SasTrading.log(false, 'saving', expandedData)
 
+        // Tabs return similar info through different inputs, so update data based on
+        // which tab is selected
         this.updateObjectFromTab(activeTab, expandedData)
 
         this.render()
@@ -972,14 +1007,25 @@ class SasTradingMenu extends FormApplication {
      * @param {Object} expandedData formData after it has been expanded by foundry utils
      */
     updateObjectFromTab(tabId, expandedData) {
+        let selectedGoodName
         switch (tabId) {
             case SasTradingMenu.TABS.OVERVIEW:
                 this.options.selectedCity = expandedData.overview.selectedCity
                 break
             case SasTradingMenu.TABS.GATHER_INFO:
+                selectedGoodName = expandedData.gatherInfo.selectedGoodName
                 this.options.selectedCity = expandedData.gatherInfo.selectedCity
-                this.options.selectedGood = expandedData.gatherInfo.selectedGood
+                this.options.selectedGoodName = expandedData.gatherInfo.selectedGood
+                this.options.selectedGood = selectedGoodName ? this.options.goodsByCity[selectedGoodName] : undefined
                 this.options.diplomacyRoll = expandedData.gatherInfo.diplomacyRoll
+                break
+            case SasTradingMenu.TABS.BUY_SELL:
+                selectedGoodName = expandedData.buySell.selectedGoodName
+                this.options.selectedCity = expandedData.buySell.selectedCity
+                this.options.selectedGoodName = expandedData.buySell.selectedGood
+                this.options.selectedGood = selectedGoodName ? this.options.goodsByCity[selectedGoodName] : undefined
+                this.options.diplomacyRoll = expandedData.buySell.diplomacyRoll
+                this.options.selectedBuy = expandedData.buySell.choice === SasTradingMenu.BUY_SELL.BUY
                 break
         }
     }
@@ -1021,6 +1067,21 @@ class SasTradingMenu extends FormApplication {
                     rejectClose: false,
                 })
                 break
+        }
+    }
+
+    /**
+     * emptyGood returns a single empty good so tables don't complain if a good
+     * hasn't been selected yet.
+     * @returns {SasGood} An empty good, with a value property appended.
+     */
+    static emptyGood() {
+        return {
+            id: "",
+            name: "",
+            demand: "",
+            scarcity: "",
+            value: ""
         }
     }
 }

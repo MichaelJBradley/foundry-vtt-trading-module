@@ -24,7 +24,8 @@
         "templates/sas-cities-config.hbs",
         "templates/sas-trading-menu.hbs",
         "templates/sas-trading-menu-overview.hbs",
-        "templates/sas-trading-menu-gather-info.hbs"
+        "templates/sas-trading-menu-gather-info.hbs",
+        "templates/sas-trading-menu-buy-sell.hbs"
     ],
     "styles": [
         "styles/sas-trading.css"

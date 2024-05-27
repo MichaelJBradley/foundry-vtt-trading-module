@@ -813,6 +813,9 @@ class SasTradingCitiesConfig extends FormApplication {
                 this.deleteNewCity(newCityId)
                 this.render()
                 break
+            case 'cancel-create':
+                this.deleteNewCity(newCityId)
+                this.render()
         }
     }
 

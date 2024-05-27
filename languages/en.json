@@ -47,7 +47,8 @@
         "trade-menu": {
             "overview": {
                 "title": "Swords & Sandals trading menu",
-                "select-city": "Select city: "
+                "select-city": "Select city:",
+                "missing-goods": "No trade goods configured for this city. Configure them in the module's settings first."
             }
         },
         "confirms": {

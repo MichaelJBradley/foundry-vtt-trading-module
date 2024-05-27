@@ -197,7 +197,7 @@ class SasTrading {
                 name: SasTrading.ID,
                 onClick: () => SasTrading.tradingMenu.render(true),
                 title: `${SasTrading.LANG}.controls.${SasTrading.CONTROLS.TOOLS}.${SasTrading.CONTROLS.TOOLS_BUTTON}`,
-                visible: true // TODO: This might need to be false, unsure how to make it GM only at the moment
+                visible: true
             }
             noteButton.tools.push(tradingToolButton)
         })

@@ -24,6 +24,12 @@
                 <td class="sas-menu-overview-table-data">{{good.demand}}</td>
                 <td class="sas-menu-overview-table-data">{{good.scarcity}}</td>
             </tr>
+        {{else}}
+            <tr>
+                <td colspan="3" class="sas-menu-overview-table-data">
+                    {{localize "SAS-TRADING.trade-menu.overview.missing-goods"}}
+                </td> 
+            </tr>
         {{/each}}
     </table>
 </form>

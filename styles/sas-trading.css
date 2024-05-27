@@ -36,6 +36,29 @@
     gap: 1em;
 }
 
-.sas-menu-overview-table-data {
+.sas-menu-table-data {
     text-align: center;
+}
+
+.sas-menu-mini-table {
+    width: 90%;
+    margin-left: 6%;
+}
+
+.sas-menu-mini-table-left-column {
+    width: 25%;
+    font-weight: bold;
+    border-right: 1px solid var(--color-border-light-tertiary);
+}
+
+.sas-menu-mini-table-header {
+    border-bottom: 1px solid var(--color-border-light-tertiary);
+}
+
+.sas-menu-button {
+    margin-top: 10px;
+}
+
+.sas-menu-content {
+    margin-top: 10px;
 }

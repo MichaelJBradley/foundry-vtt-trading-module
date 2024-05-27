@@ -25,6 +25,7 @@
                     "name-title": "The name of the trade good",
                     "value-title": "The base value of the trade good as a whole number",
                     "create-good": "Create trade good",
+                    "delete-good": "Delete trade good",
                     "confirm-create": "Confirm trade good creation. Name cannot be modified after.",
                     "cancel-create": "Cancel trade good creation",
                     "missing-goods": "No trade goods configured"

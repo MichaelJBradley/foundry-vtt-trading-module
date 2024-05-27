@@ -209,7 +209,7 @@ class SasTrading {
             const noteButton = noteButtons[0]
             const tradingToolButton = {
                 button: true,
-                icon: "fa-solid fa-usd",
+                icon: "fa-solid fa-sack-dollar",
                 name: SasTrading.ID,
                 onClick: () => SasTrading.tradingMenu.render(true),
                 title: `${SasTrading.LANG}.controls.${SasTrading.CONTROLS.TOOLS}.${SasTrading.CONTROLS.TOOLS_BUTTON}`,

@@ -60,3 +60,11 @@
     border-left: 1px solid #191813;
     border-top: 1px solid #4b4a44
 }
+
+.sas-menu-button {
+    margin-top: 10px;
+}
+
+.sas-menu-content {
+    margin-top: 10px;
+}

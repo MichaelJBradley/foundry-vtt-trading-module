@@ -1,4 +1,4 @@
-<div class="flexcol">
+<div class="flexcol sas-menu-content">
     <div class="flexrow">
         <div class="flexcol">
             <div class="flexrow">
@@ -26,9 +26,9 @@
                 <input type="number" name="buySell.diplomacyRoll" data-dtype="Number" value="{{diplomacyRoll}}"/>
             </div>
             <div class="flexrow">
-                <input type="radio" id="buy-sell-buy" name="buySell.choice" value="buy" {{#if selectedBuy}}selected{{/if}} />
+                <input type="radio" id="buy-sell-buy" name="buySell.choice" value="buy" {{#if selectedBuy}}checked{{/if}} />
                 <label for="buy-sell-buy">{{localize "SAS-TRADING.trade-menu.buy-sell.buy"}}</label>
-                <input type="radio" id="buy-sell-sell" name="buySell.choice" value="sell" {{#unless selectedBuy}}selected{{/unless}} />
+                <input type="radio" id="buy-sell-sell" name="buySell.choice" value="sell" {{#unless selectedBuy}}checked{{/unless}} />
                 <label for="buy-sell-sell">{{localize "SAS-TRADING.trade-menu.buy-sell.sell"}}</label>
             </div>
         </div>
@@ -62,4 +62,7 @@
             </table>
         </div>
     </div>
+    <button type="button" class="sas-menu-button" data-action="buySell-getPrice">
+        <i class="fa-solid fa-coins"></i>{{localize "SAS-TRADING.trade-menu.buy-sell.get-price"}}
+    </button>
 </div>

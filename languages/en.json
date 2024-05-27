@@ -68,7 +68,8 @@
             "buy-sell": {
                 "tab-title": "Buy / Sell",
                 "buy": "Buy",
-                "sell": "Sell"
+                "sell": "Sell",
+                "get-price": "Get price per unit"
             }
         },
         "confirms": {

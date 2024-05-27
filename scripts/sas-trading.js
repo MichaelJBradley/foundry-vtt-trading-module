@@ -555,8 +555,10 @@ class SasTradingGoodConfig extends FormApplication {
 
     getData(options) {
         const goodsByCity = SasTradingGoodData.goodsByCity[options.selectedCity] || {}
+        const numGoods = Object.keys(goodsByCity).length
         return {
             goodsByCity: goodsByCity,
+            numGoods: numGoods,
             cities: SasTradingCitiesData.allCities,
             selectedCity: options.selectedCity,
             demands: Object.values(SasTradingGoodData.demand),
@@ -672,8 +674,10 @@ class SasTradingBaseGoodConfig extends FormApplication {
     }
 
     getData(options) {
+        const baseGoods = SasTradingBaseGoodData.allBaseGoodsList
         return {
-            baseGoods: SasTradingBaseGoodData.allBaseGoodsList,
+            baseGoods: baseGoods,
+            numBaseGoods: baseGoods.length,
             newGoods: options.newGoods
         }
     }
@@ -885,9 +889,11 @@ class SasTradingMenu extends FormApplication {
 
     getData(options) {
         const goodsByCity = SasTradingGoodData.goodsByCity[options.selectedCity] || {}
+        const numGoods = Object.keys(goodsByCity).length
         SasTrading.log(false, 'goods', goodsByCity, 'for city', options.selectedCity)
         return {
             goodsByCity: goodsByCity,
+            numGoods: numGoods,
             cities: SasTradingCitiesData.allCitiesSorted,
             selectedCity: options.selectedCity
         }

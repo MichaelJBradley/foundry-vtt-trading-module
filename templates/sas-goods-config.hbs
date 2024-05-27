@@ -1,11 +1,18 @@
 <form>
-    <select id="cities" name="selectedCity">
-        {{#each cities}}
-            <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
-                {{this}}
-            </option>
-        {{/each}}
-    </select>
+    <div class="flexcol sas-config-header">
+        <div class="flexrow">
+            <p class="flex1">{{localize "SAS-TRADING.select-city"}}</p>
+            <select id="cities" name="selectedCity">
+                {{#each cities}}
+                    <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
+                        {{this}}
+                    </option>
+                {{/each}}
+            </select>
+            <div class="flex2"></div>
+            <p class="flex1">{{localize "SAS-TRADING.total-goods"}} {{numGoods}}</p>
+        </div>
+    </div>
     <ul class="sas-config flexcol">
         {{#each goodsByCity as | good |}}
             <li class="flexrow" data-good-id="{{good.id}}">

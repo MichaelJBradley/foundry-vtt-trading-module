@@ -763,8 +763,6 @@ class SasTradingCitiesConfig extends FormApplication {
 
     async _updateObject(event, formData) {
         const expandedData = foundry.utils.expandObject(formData)
-        SasTrading.log(false, 'form data', formData)
-        SasTrading.log(false, 'saving', { expandedData })
 
         // Because cities are immutable, there's no need to update the city data
 
@@ -784,7 +782,6 @@ class SasTradingCitiesConfig extends FormApplication {
     }
 
     async _handleButtonClick(event) {
-        SasTrading.log(false, 'button click event', event)
         const clickedElement = $(event.currentTarget)
         const action = clickedElement.data()?.action
         const cityName = clickedElement.parents('[data-city-name]')?.data()?.cityName

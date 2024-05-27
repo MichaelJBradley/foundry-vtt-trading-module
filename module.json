@@ -20,7 +20,8 @@
     ],
     "templates": [
         "templates/sas-goods-config.hbs",
-        "templates/sas-base-goods-config.hbs"
+        "templates/sas-base-goods-config.hbs",
+        "templates/sas-cities-config.hbs"
     ],
     "styles": [
         "styles/sas-trading.css"

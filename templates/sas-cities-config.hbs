@@ -1,0 +1,30 @@
+<form>
+    <ul class="sas-config flexcol">
+        {{#each cities as | city |}}
+            <li class="flexrow" data-city-name="{{this}}">
+                <p name="existing.{{this}}"><b>{{this}}</b></p>
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.cities-menu.delete-city"}}" data-action="delete" class="flex0 sas-config-icon-button">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </li>
+        {{else}}
+            {{localize "SAS-TRADING.settings.config.cities-menu.missing-cities"}}
+        {{/each}}
+    </ul>
+    <ul class="sas-config flexcol">
+        {{#each newCities as | newCity |}}
+            <li class="flexrow" data-new-city-id="{{newCity.id}}">
+                <input type="text" value="{{newCity.name}}" name="new.{{newCity.id}}.name" data-dtype="String" />
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.cities-menu.confirm-create"}}" data-action="confirm-create" class="flex0 sas-config-icon-button">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button type="button" title="{{localize "SAS-TRADING.settings.config.cities-menu.cancel-create"}}" data-action="cancel-create" class="flex0 sas-config-icon-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </li>
+        {{/each}}
+    </ul>
+    <button type="button" data-action="create">
+        <i class="fas fa-plus"></i>{{localize "SAS-TRADING.settings.config.cities-menu.create-city"}}
+    </button>
+</form>

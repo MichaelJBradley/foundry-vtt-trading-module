@@ -22,7 +22,9 @@
         "templates/sas-goods-config.hbs",
         "templates/sas-base-goods-config.hbs",
         "templates/sas-cities-config.hbs",
-        "templates/sas-trading-menu.hbs"
+        "templates/sas-trading-menu.hbs",
+        "templates/sas-trading-menu-overview.hbs",
+        "templates/sas-trading-menu-gather-info.hbs"
     ],
     "styles": [
         "styles/sas-trading.css"

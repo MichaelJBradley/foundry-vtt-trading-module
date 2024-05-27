@@ -1,36 +1,15 @@
 <form>
-    <div class="flexcol">
-        <div class="flexrow">
-            <p class="flex1">{{localize "SAS-TRADING.select-city"}}</p>
-            <select class="flex1" id="cities" name="selectedCity">
-                {{#each cities}}
-                    <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
-                        {{this}}
-                    </option>
-                {{/each}}
-            </select>
-            <div class="flex2"></div>
-            <p class="flex1">{{localize "SAS-TRADING.total-goods"}} {{numGoods}}</p>
-        </div>
-    </div>
-    <table>
-        <tr>
-            <th>{{localize "SAS-TRADING.good"}}</th>
-            <th>{{localize "SAS-TRADING.demand"}}</th>
-            <th>{{localize "SAS-TRADING.scarcity"}}</th>
-        </tr>
-        {{#each goodsByCity as | good | }}
-            <tr>
-                <td class="sas-menu-overview-table-data">{{good.name}}</td>
-                <td class="sas-menu-overview-table-data">{{good.demand}}</td>
-                <td class="sas-menu-overview-table-data">{{good.scarcity}}</td>
-            </tr>
-        {{else}}
-            <tr>
-                <td colspan="3" class="sas-menu-overview-table-data">
-                    {{localize "SAS-TRADING.trade-menu.overview.missing-goods"}}
-                </td> 
-            </tr>
+    <nav class="tabs" data-group="primary-tabs">
+        {{#each tabs as | tab |}}
+            <a class="item" data-tab="{{tab.id}}">{{localize tab.title}}</a>
         {{/each}}
-    </table>
+    </nav>
+
+    <section class="content">
+        {{#each tabs as | tab |}}
+            <div class="tab" data-tab="{{tab.id}}" data-group="primary-tabs">
+                {{> (lookup . 'template') ../this}}
+            </div>
+        {{/each}}
+    </section>
 </form>

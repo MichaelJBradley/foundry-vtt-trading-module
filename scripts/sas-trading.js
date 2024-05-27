@@ -62,7 +62,11 @@ class SasTrading {
         CONFIG_GOODS: `modules/${this.ID}/templates/sas-goods-config.hbs`,
         CONFIG_BASE: `modules/${this.ID}/templates/sas-base-goods-config.hbs`,
         CONFIG_CITIES: `modules/${this.ID}/templates/sas-cities-config.hbs`,
-        MENU: `modules/${this.ID}/templates/sas-trading-menu.hbs`
+        MENU: `modules/${this.ID}/templates/sas-trading-menu.hbs`,
+        PARTIALS: {
+            MENU_OVERVIEW: `modules/${this.ID}/templates/sas-trading-menu-overview.hbs`,
+            MENU_GATHER_INFO: `modules/${this.ID}/templates/sas-trading-menu-gather-info.hbs`
+        }
     }
     static SETTINGS = {
         GOODS: 'goods',           // see {SasGoods}
@@ -80,7 +84,8 @@ class SasTrading {
     }
     static MENU = {
         TRADE: 'trade-menu',
-        TRADE_OVERVIEW: 'overview'
+        TRADE_OVERVIEW: 'overview',
+        TRADE_GATHER_INFO: 'gather-info'
     }
     static GM_ROLE = 4
 
@@ -179,6 +184,14 @@ class SasTrading {
     static initialize() {
         this.registerSettings()
         this.tradingMenu = new SasTradingMenu()
+        
+        // Handlebars partials need to be loaded in ahead of time to
+        //   1. Tell foundry to load them
+        //   2. Register them as partials with Handlebars
+        loadTemplates([
+            SasTrading.TEMPLATES.PARTIALS.MENU_OVERVIEW, 
+            SasTrading.TEMPLATES.PARTIALS.MENU_GATHER_INFO
+        ])
         
         // Set up the tool button to open the trading menu
         Hooks.on('getSceneControlButtons', buttons => {
@@ -869,18 +882,53 @@ class SasTradingCitiesConfig extends FormApplication {
 }
 
 class SasTradingMenu extends FormApplication {
+    
+    static TABS = {
+        OVERVIEW: 'sas-trading-menu-overview',
+        GATHER_INFO: 'sas-trading-menu-gather-info'
+    }
+
+    static BASE_GATHER_INFO_ACCURACY = 70
+
     static get defaultOptions() {
         const defaults = super.defaultOptions
+
+        const selectedCity = SasTradingCitiesData.allCitiesSorted[0]
+        const goodsByCity = SasTradingGoodData.goodsByCity[selectedCity]
+        const selectedGood = goodsByCity ? Object.keys(goodsByCity)[0] : ""
+
         const overrides = {
             height: 'auto',
             width: '600',
             id: 'sas-trading-menu',
-            title: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_OVERVIEW}.title`),
+            title: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.title`),
             template: SasTrading.TEMPLATES.MENU,
             closeOnSubmit: false,
             submitOnChange: true,
             resizable: true,
-            selectedCity: SasTradingCitiesData.allCitiesSorted[0],
+            tabs: [
+                {
+                    group: 'primary-tabs',
+                    navSelector: '.tabs',
+                    contentSelector: '.content',
+                    initial: this.TABS.OVERVIEW
+                }
+            ],
+            tabData: [
+                {
+                    id: this.TABS.OVERVIEW,
+                    title: `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_OVERVIEW}.tab-title`,
+                    template: SasTrading.TEMPLATES.PARTIALS.MENU_OVERVIEW
+                },
+                {
+                    id: this.TABS.GATHER_INFO,
+                    title: `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.tab-title`,
+                    template: SasTrading.TEMPLATES.PARTIALS.MENU_GATHER_INFO
+                }
+            ],
+            activeTab: this.TABS.OVERVIEW,
+            selectedCity: selectedCity,
+            selectedGood: selectedGood,
         }
         const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
 
@@ -889,24 +937,91 @@ class SasTradingMenu extends FormApplication {
 
     getData(options) {
         const goodsByCity = SasTradingGoodData.goodsByCity[options.selectedCity] || {}
-        const numGoods = Object.keys(goodsByCity).length
+        const baseGoods = SasTradingBaseGoodData.allBaseGoods
+        const goodNames = Object.keys(goodsByCity)
+        goodNames.forEach(name => {
+            goodsByCity[name].value = baseGoods[name]
+        })
         SasTrading.log(false, 'goods', goodsByCity, 'for city', options.selectedCity)
         return {
+            tabs: options.tabData,
             goodsByCity: goodsByCity,
-            numGoods: numGoods,
+            goodNames: goodNames,
+            numGoods: goodNames.length,
             cities: SasTradingCitiesData.allCitiesSorted,
-            selectedCity: options.selectedCity
+            selectedCity: options.selectedCity,
+            selectedGood: options.selectedGood,
+            diplomacyRoll: options.diplomacyRoll
         }
     }
 
     async _updateObject(event, formData) {
+        const updatedElement = $(event.currentTarget)
+        const activeTab = updatedElement.parents('[data-tab]')?.data()?.tab
         const expandedData = foundry.utils.expandObject(formData)
         SasTrading.log(false, 'saving', expandedData)
 
-        // Update selected city
-        this.options.selectedCity = expandedData.selectedCity
+        this.updateObjectFromTab(activeTab, expandedData)
 
         this.render()
+    }
+
+    /**
+     * updateTabData updates options based on the given tab ID.
+     * @param {string} tabId 
+     * @param {Object} expandedData formData after it has been expanded by foundry utils
+     */
+    updateObjectFromTab(tabId, expandedData) {
+        switch (tabId) {
+            case SasTradingMenu.TABS.OVERVIEW:
+                this.options.selectedCity = expandedData.overview.selectedCity
+                break
+            case SasTradingMenu.TABS.GATHER_INFO:
+                this.options.selectedCity = expandedData.gatherInfo.selectedCity
+                this.options.selectedGood = expandedData.gatherInfo.selectedGood
+                this.options.diplomacyRoll = expandedData.gatherInfo.diplomacyRoll
+                break
+        }
+    }
+
+    activateListeners(html) {
+        super.activateListeners(html)
+        html.on('click', '[data-action]', this._handleButtonClick.bind(this))
+    }
+
+    async _handleButtonClick(event) {
+        const clickedElement = $(event.currentTarget)
+        const action = clickedElement.data()?.action
+
+        switch (action) {
+            case 'gatherInfo-roll':
+                // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
+                if (!this.options.diplomacyRoll) {
+                    SasTrading.log(false, 'missing diplomacy roll result')
+                    break
+                }
+                // The DC for the check is 20, so if it's below that we can keep going, but the result might be innacurate
+                if (this.options.diplomacyRoll < 20) {
+                    SasTrading.log(false, 'diplomacy roll was less than 20 for a DC 20 diplomacy check')
+                }
+                const accuracyRoll = new Roll('d100')
+                await accuracyRoll.toMessage({}, { rollMode: 'gmroll' })
+                // This is the equation for determining whether gathered info is accurate
+                // See written rules for more info
+                const accuracyThresh = SasTradingMenu.BASE_GATHER_INFO_ACCURACY + (this.options.diplomacyRoll - 20)
+                const accurate = accuracyRoll.total <= accuracyThresh
+                const contentLocal = accurate ?
+                    `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.content-success` :
+                    `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.content-failure`
+                Dialog.prompt({
+                    title: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.title`),
+                    content: SasTrading.localize(contentLocal),
+                    label: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.label`),
+                    callback: (html) => SasTrading.log(false, 'accurate info:', accurate),
+                    rejectClose: false,
+                })
+                break
+        }
     }
 }
 

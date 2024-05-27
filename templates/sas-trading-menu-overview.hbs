@@ -15,18 +15,20 @@
 <table>
     <tr>
         <th>{{localize "SAS-TRADING.good"}}</th>
+        <th>{{localize "SAS-TRADING.value"}}</th>
         <th>{{localize "SAS-TRADING.demand"}}</th>
         <th>{{localize "SAS-TRADING.scarcity"}}</th>
     </tr>
     {{#each goodsByCity as | good | }}
         <tr>
             <td class="sas-menu-overview-table-data">{{good.name}}</td>
+            <td class="sas-menu-overview-table-data">{{good.value}}</td>
             <td class="sas-menu-overview-table-data">{{good.demand}}</td>
             <td class="sas-menu-overview-table-data">{{good.scarcity}}</td>
         </tr>
     {{else}}
         <tr>
-            <td colspan="3" class="sas-menu-overview-table-data">
+            <td colspan="4" class="sas-menu-overview-table-data">
                 {{localize "SAS-TRADING.trade-menu.overview.missing-goods"}}
             </td> 
         </tr>

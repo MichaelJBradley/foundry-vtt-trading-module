@@ -937,7 +937,11 @@ class SasTradingMenu extends FormApplication {
 
     getData(options) {
         const goodsByCity = SasTradingGoodData.goodsByCity[options.selectedCity] || {}
+        const baseGoods = SasTradingBaseGoodData.allBaseGoods
         const goodNames = Object.keys(goodsByCity)
+        goodNames.forEach(name => {
+            goodsByCity[name].value = baseGoods[name]
+        })
         const numGoods = goodNames.length
         SasTrading.log(false, 'goods', goodsByCity, 'for city', options.selectedCity)
         return {

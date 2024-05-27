@@ -1,7 +1,7 @@
 <form>
     <div class="flexcol">
         <div class="flexrow">
-            <p class="flex1">{{localize "SAS-TRADING.trade-menu.overview.select-city"}}</p>
+            <p class="flex1">{{localize "SAS-TRADING.select-city"}}</p>
             <select class="flex1" id="cities" name="selectedCity">
                 {{#each cities}}
                     <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
@@ -9,7 +9,8 @@
                     </option>
                 {{/each}}
             </select>
-            <div class="flex3"></div>
+            <div class="flex2"></div>
+            <p class="flex1">{{localize "SAS-TRADING.total-goods"}} {{numGoods}}</p>
         </div>
     </div>
     <table>

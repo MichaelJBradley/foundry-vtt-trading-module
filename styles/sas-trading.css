@@ -26,6 +26,10 @@
     text-shadow: 0 0 5px red;
 }
 
+.sas-config-header {
+    padding-bottom: 10px;
+}
+
 .sas-menu {
     padding: 0;
     margin-top: 0;

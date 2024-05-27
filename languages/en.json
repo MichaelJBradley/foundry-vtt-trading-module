@@ -5,6 +5,8 @@
         "good": "Trade good",
         "name": "Name",
         "value": "Value",
+        "select-city": "Select city:",
+        "total-goods": "Total goods:",
         "settings": {
             "config": {
                 "goods-menu": {
@@ -47,7 +49,6 @@
         "trade-menu": {
             "overview": {
                 "title": "Swords & Sandals trading menu",
-                "select-city": "Select city:",
                 "missing-goods": "No trade goods configured for this city. Configure them in the module's settings first."
             }
         },

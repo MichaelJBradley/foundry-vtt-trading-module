@@ -1,5 +1,5 @@
 <form>
-    <select id="cities", name="selectedCity">
+    <select id="cities" name="selectedCity">
         {{#each cities}}
             <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
                 {{this}}

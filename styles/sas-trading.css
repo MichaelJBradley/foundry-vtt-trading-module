@@ -25,3 +25,13 @@
     box-shadow: none;
     text-shadow: 0 0 5px red;
 }
+
+.sas-menu {
+    padding: 0;
+    margin-top: 0;
+    gap: 1em;
+}
+
+.sas-menu-overview-table-data {
+    text-align: center;
+}

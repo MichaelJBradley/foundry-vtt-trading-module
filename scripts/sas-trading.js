@@ -181,11 +181,11 @@ class SasTrading {
         return game.i18n.localize(languageKey)
     }
 
-    static async initialize() {
+    static initialize() {
         this.registerSettings()
         this.tradingMenu = new SasTradingMenu()
         
-        // Handlebards partials need to be loaded in ahead of time to
+        // Handlebars partials need to be loaded in ahead of time to
         //   1. Tell foundry to load them
         //   2. Register them as partials with Handlebars
         loadTemplates([
@@ -942,13 +942,12 @@ class SasTradingMenu extends FormApplication {
         goodNames.forEach(name => {
             goodsByCity[name].value = baseGoods[name]
         })
-        const numGoods = goodNames.length
         SasTrading.log(false, 'goods', goodsByCity, 'for city', options.selectedCity)
         return {
             tabs: options.tabData,
             goodsByCity: goodsByCity,
             goodNames: goodNames,
-            numGoods: numGoods,
+            numGoods: goodNames.length,
             cities: SasTradingCitiesData.allCitiesSorted,
             selectedCity: options.selectedCity,
             selectedGood: options.selectedGood,

@@ -56,7 +56,13 @@
             },
             "gather-info": {
                 "tab-title": "Gather rumors",
-                "roll-accuracy": "Roll rumor accuracy"
+                "roll-accuracy": "Roll rumor accuracy",
+                "results": {
+                    "title": "Gather rumors results",
+                    "content-success": "The rumors were accurate",
+                    "content-failure": "The rumors were innaccurate",
+                    "label": "Neat"
+                }
             }
         },
         "confirms": {

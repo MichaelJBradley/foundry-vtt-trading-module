@@ -888,6 +888,8 @@ class SasTradingMenu extends FormApplication {
         GATHER_INFO: 'sas-trading-menu-gather-info'
     }
 
+    static BASE_GATHER_INFO_ACCURACY = 70
+
     static get defaultOptions() {
         const defaults = super.defaultOptions
 
@@ -985,7 +987,38 @@ class SasTradingMenu extends FormApplication {
     }
 
     async _handleButtonClick(event) {
+        const clickedElement = $(event.currentTarget)
+        const action = clickedElement.data()?.action
 
+        switch (action) {
+            case 'gatherInfo-roll':
+                // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
+                if (!this.options.diplomacyRoll) {
+                    SasTrading.log(false, 'missing diplomacy roll result')
+                    break
+                }
+                // The DC for the check is 20, so if it's below that we can keep going, but the result might be innacurate
+                if (this.options.diplomacyRoll < 20) {
+                    SasTrading.log(false, 'diplomacy roll was less than 20 for a DC 20 diplomacy check')
+                }
+                const accuracyRoll = new Roll('d100')
+                await accuracyRoll.toMessage({}, { rollMode: 'gmroll' })
+                // This is the equation for determining whether gathered info is accurate
+                // See written rules for more info
+                const accuracyThresh = SasTradingMenu.BASE_GATHER_INFO_ACCURACY + (this.options.diplomacyRoll - 20)
+                const accurate = accuracyRoll.total <= accuracyThresh
+                const contentLocal = accurate ?
+                    `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.content-success` :
+                    `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.content-failure`
+                Dialog.prompt({
+                    title: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.title`),
+                    content: SasTrading.localize(contentLocal),
+                    label: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.label`),
+                    callback: (html) => SasTrading.log(false, 'accurate info:', accurate),
+                    rejectClose: false,
+                })
+                break
+        }
     }
 }
 

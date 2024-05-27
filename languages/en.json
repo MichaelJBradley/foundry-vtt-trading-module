@@ -5,6 +5,7 @@
         "good": "Trade good",
         "name": "Name",
         "value": "Value",
+        "select-good": "Select good:",
         "select-city": "Select city:",
         "total-goods": "Total goods:",
         "settings": {
@@ -47,9 +48,15 @@
             }
         },
         "trade-menu": {
+            "title": "Swords & Sandals trading menu",
+            "diplomacy-roll": "Diplomacy roll:",
             "overview": {
-                "title": "Swords & Sandals trading menu",
+                "tab-title": "Overview",
                 "missing-goods": "No trade goods configured for this city. Configure them in the module's settings first."
+            },
+            "gather-info": {
+                "tab-title": "Gather rumors",
+                "roll-accuracy": "Roll rumor accuracy"
             }
         },
         "confirms": {

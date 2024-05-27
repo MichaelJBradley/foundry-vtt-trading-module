@@ -62,7 +62,11 @@ class SasTrading {
         CONFIG_GOODS: `modules/${this.ID}/templates/sas-goods-config.hbs`,
         CONFIG_BASE: `modules/${this.ID}/templates/sas-base-goods-config.hbs`,
         CONFIG_CITIES: `modules/${this.ID}/templates/sas-cities-config.hbs`,
-        MENU: `modules/${this.ID}/templates/sas-trading-menu.hbs`
+        MENU: `modules/${this.ID}/templates/sas-trading-menu.hbs`,
+        PARTIALS: {
+            MENU_OVERVIEW: `modules/${this.ID}/templates/sas-trading-menu-overview.hbs`,
+            MENU_GATHER_INFO: `modules/${this.ID}/templates/sas-trading-menu-gather-info.hbs`
+        }
     }
     static SETTINGS = {
         GOODS: 'goods',           // see {SasGoods}
@@ -80,7 +84,8 @@ class SasTrading {
     }
     static MENU = {
         TRADE: 'trade-menu',
-        TRADE_OVERVIEW: 'overview'
+        TRADE_OVERVIEW: 'overview',
+        TRADE_GATHER_INFO: 'gather-info'
     }
     static GM_ROLE = 4
 
@@ -176,9 +181,17 @@ class SasTrading {
         return game.i18n.localize(languageKey)
     }
 
-    static initialize() {
+    static async initialize() {
         this.registerSettings()
         this.tradingMenu = new SasTradingMenu()
+        
+        // Handlebards partials need to be loaded in ahead of time to
+        //   1. Tell foundry to load them
+        //   2. Register them as partials with Handlebars
+        loadTemplates([
+            SasTrading.TEMPLATES.PARTIALS.MENU_OVERVIEW, 
+            SasTrading.TEMPLATES.PARTIALS.MENU_GATHER_INFO
+        ])
         
         // Set up the tool button to open the trading menu
         Hooks.on('getSceneControlButtons', buttons => {
@@ -869,18 +882,51 @@ class SasTradingCitiesConfig extends FormApplication {
 }
 
 class SasTradingMenu extends FormApplication {
+    
+    static TABS = {
+        OVERVIEW: 'sas-trading-menu-overview',
+        GATHER_INFO: 'sas-trading-menu-gather-info'
+    }
+
     static get defaultOptions() {
         const defaults = super.defaultOptions
+
+        
+        const selectedCity = SasTradingCitiesData.allCitiesSorted[0]
+        const selectedGood = selectedCity ? Object.keys(SasTradingGoodData.goodsByCity[selectedCity])[0] : undefined
+
         const overrides = {
             height: 'auto',
             width: '600',
             id: 'sas-trading-menu',
-            title: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_OVERVIEW}.title`),
+            title: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.title`),
             template: SasTrading.TEMPLATES.MENU,
             closeOnSubmit: false,
             submitOnChange: true,
             resizable: true,
-            selectedCity: SasTradingCitiesData.allCitiesSorted[0],
+            tabs: [
+                {
+                    group: 'primary-tabs',
+                    navSelector: '.tabs',
+                    contentSelector: '.content',
+                    initial: this.TABS.OVERVIEW
+                }
+            ],
+            tabData: [
+                {
+                    id: this.TABS.OVERVIEW,
+                    title: `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_OVERVIEW}.tab-title`,
+                    template: SasTrading.TEMPLATES.PARTIALS.MENU_OVERVIEW
+                },
+                {
+                    id: this.TABS.GATHER_INFO,
+                    title: `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.tab-title`,
+                    template: SasTrading.TEMPLATES.PARTIALS.MENU_GATHER_INFO
+                }
+            ],
+            activeTab: this.TABS.OVERVIEW,
+            selectedCity: selectedCity,
+            selectedGood: selectedGood,
         }
         const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
 
@@ -889,24 +935,57 @@ class SasTradingMenu extends FormApplication {
 
     getData(options) {
         const goodsByCity = SasTradingGoodData.goodsByCity[options.selectedCity] || {}
-        const numGoods = Object.keys(goodsByCity).length
+        const goodNames = Object.keys(goodsByCity)
+        const numGoods = goodNames.length
         SasTrading.log(false, 'goods', goodsByCity, 'for city', options.selectedCity)
         return {
+            tabs: options.tabData,
             goodsByCity: goodsByCity,
+            goodNames: goodNames,
             numGoods: numGoods,
             cities: SasTradingCitiesData.allCitiesSorted,
-            selectedCity: options.selectedCity
+            selectedCity: options.selectedCity,
+            selectedGood: options.selectedGood,
+            diplomacyRoll: options.diplomacyRoll
         }
     }
 
     async _updateObject(event, formData) {
+        const updatedElement = $(event.currentTarget)
+        const activeTab = updatedElement.parents('[data-tab]')?.data()?.tab
         const expandedData = foundry.utils.expandObject(formData)
         SasTrading.log(false, 'saving', expandedData)
 
-        // Update selected city
-        this.options.selectedCity = expandedData.selectedCity
+        this.updateObjectFromTab(activeTab, expandedData)
 
         this.render()
+    }
+
+    /**
+     * updateTabData updates options based on the given tab ID.
+     * @param {string} tabId 
+     * @param {Object} expandedData formData after it has been expanded by foundry utils
+     */
+    updateObjectFromTab(tabId, expandedData) {
+        switch (tabId) {
+            case SasTradingMenu.TABS.OVERVIEW:
+                this.options.selectedCity = expandedData.overview.selectedCity
+                break
+            case SasTradingMenu.TABS.GATHER_INFO:
+                this.options.selectedCity = expandedData.gatherInfo.selectedCity
+                this.options.selectedGood = expandedData.gatherInfo.selectedGood
+                this.options.diplomacyRoll = expandedData.gatherInfo.diplomacyRoll
+                break
+        }
+    }
+
+    activateListeners(html) {
+        super.activateListeners(html)
+        html.on('click', '[data-action]', this._handleButtonClick.bind(this))
+    }
+
+    async _handleButtonClick(event) {
+
     }
 }
 

@@ -1,0 +1,34 @@
+<div class="flexcol">
+    <div class="flexrow">
+        <p class="flex1">{{localize "SAS-TRADING.select-city"}}</p>
+        <select class="flex1" id="overview-cities" name="overview.selectedCity">
+            {{#each cities}}
+                <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
+                    {{this}}
+                </option>
+            {{/each}}
+        </select>
+        <div class="flex2"></div>
+        <p class="flex1">{{localize "SAS-TRADING.total-goods"}} {{numGoods}}</p>
+    </div>
+</div>
+<table>
+    <tr>
+        <th>{{localize "SAS-TRADING.good"}}</th>
+        <th>{{localize "SAS-TRADING.demand"}}</th>
+        <th>{{localize "SAS-TRADING.scarcity"}}</th>
+    </tr>
+    {{#each goodsByCity as | good | }}
+        <tr>
+            <td class="sas-menu-overview-table-data">{{good.name}}</td>
+            <td class="sas-menu-overview-table-data">{{good.demand}}</td>
+            <td class="sas-menu-overview-table-data">{{good.scarcity}}</td>
+        </tr>
+    {{else}}
+        <tr>
+            <td colspan="3" class="sas-menu-overview-table-data">
+                {{localize "SAS-TRADING.trade-menu.overview.missing-goods"}}
+            </td> 
+        </tr>
+    {{/each}}
+</table>

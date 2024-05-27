@@ -1,0 +1,32 @@
+<div class="flexcol">
+    <div class="flexrow">
+        <p>{{localize "SAS-TRADING.select-city"}}</p>
+        <select id="gather-info-cities" name="gatherInfo.selectedCity">
+            {{#each cities as | cities |}}
+                <option value="{{this}}" {{#if (eq ../selectedCity this)}}selected{{/if}}>
+                    {{this}}
+                </option>
+            {{/each}}
+        </select>
+        <div class="flex2"></div>
+    </div>
+    <div class="flexrow">
+        <p>{{localize "SAS-TRADING.select-good"}}</p>
+        <select id="gather-info-goods" name="gatherInfo.selectedGood">
+            {{#each goodNames as | goodName |}}
+                <option value="{{this}}" {{#if (eq ../selectedGood this)}}selected{{/if}}>
+                    {{this}}
+                </option>
+            {{/each}}
+        </select>
+        <div class="flex2"></div>
+    </div>
+    <div class="flexrow">
+        <p>{{localize "SAS-TRADING.trade-menu.diplomacy-roll"}}</p>
+        <input type="number" name="gatherInfo.diplomacyRoll" data-dtype="Number" value="{{diplomacyRoll}}"/>
+        <div class="flex2"></div>
+    </div>
+    <button type="button" data-action="gatherInfo-roll">
+        <i class="fas fa-eye"></i>{{localize "SAS-TRADING.trade-menu.gather-info.roll-accuracy"}}
+    </button>
+</div>

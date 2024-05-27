@@ -893,9 +893,9 @@ class SasTradingMenu extends FormApplication {
     static get defaultOptions() {
         const defaults = super.defaultOptions
 
-        
         const selectedCity = SasTradingCitiesData.allCitiesSorted[0]
-        const selectedGood = selectedCity ? Object.keys(SasTradingGoodData.goodsByCity[selectedCity])[0] : undefined
+        const goodsByCity = SasTradingGoodData.goodsByCity[selectedCity]
+        const selectedGood = goodsByCity ? Object.keys(goodsByCity)[0] : ""
 
         const overrides = {
             height: 'auto',

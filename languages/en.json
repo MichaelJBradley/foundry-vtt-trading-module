@@ -28,13 +28,28 @@
                     "confirm-create": "Confirm trade good creation. Name cannot be modified after.",
                     "cancel-create": "Cancel trade good creation",
                     "missing-goods": "No trade goods configured"
+                },
+                "cities-menu": {
+                    "name": "Configure cities",
+                    "label": "Cities",
+                    "hint": "Add and remove cities",
+                    "title": "Cities config",
+                    "create-city": "Create city",
+                    "delete-city": "Delete city",
+                    "confirm-create": "Confirm city creation. Name cannot be modified after.",
+                    "cancel-create": "Cancel city creation",
+                    "missing-cities": "No cities configured"
                 }
             }
         },
         "confirms": {
-            "delete-confirm": {
+            "delete-confirm-good": {
                 "title": "Delete trade good",
                 "content": "Are you sure you want to delete the trade good? This cannot be undone."
+            },
+            "delete-confirm-city": {
+                "title": "Delete city",
+                "content": "Are you sure you want to delete the city? This cannot be undone."
             }
         }
     }

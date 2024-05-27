@@ -60,7 +60,8 @@ class SasTrading {
     static FLAGS = {}
     static TEMPLATES = {
         CONFIG_GOODS: `modules/${this.ID}/templates/sas-goods-config.hbs`,
-        CONFIG_BASE: `modules/${this.ID}/templates/sas-base-goods-config.hbs`
+        CONFIG_BASE: `modules/${this.ID}/templates/sas-base-goods-config.hbs`,
+        CONFIG_CITIES: `modules/${this.ID}/templates/sas-cities-config.hbs` 
     }
     static SETTINGS = {
         GOODS: 'goods',           // see {SasGoods}
@@ -70,6 +71,7 @@ class SasTrading {
         CONFIG: 'config',
         CONFIG_GOODS: 'goods-menu',
         CONFIG_BASE: 'base-goods-menu',
+        CONFIG_CITIES: 'cities-menu'
     }
 
     /**
@@ -110,20 +112,28 @@ class SasTrading {
             type: Object,
             default: []
         })
-        game.settings.registerMenu(this.ID, this.SETTINGS.CONFIG_GOODS, {
-            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.name`,
-            label: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.label`,
-            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.hint`,
-            icon: 'fas fa-bars',
-            type: SasTradingGoodConfig,
-            restricted: true
-        })
         game.settings.registerMenu(this.ID, this.SETTINGS.CONFIG_BASE, {
             name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.name`,
             label: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.label`,
             hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.hint`,
             icon: 'fas fa-bars',
             type: SasTradingBaseGoodConfig,
+            restricted: true
+        })
+        game.settings.registerMenu(this.ID, this.SETTINGS.CONFIG_CITIES, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_CITIES}.name`,
+            label: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_CITIES}.label`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_CITIES}.hint`,
+            icon: 'fas fa-bars',
+            type: SasTradingCitiesConfig,
+            restricted: true
+        })
+        game.settings.registerMenu(this.ID, this.SETTINGS.CONFIG_GOODS, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.name`,
+            label: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.label`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.hint`,
+            icon: 'fas fa-bars',
+            type: SasTradingGoodConfig,
             restricted: true
         })
     }
@@ -527,14 +537,14 @@ class SasTradingGoodConfig extends FormApplication {
 
         // 1. Update existing goods data
         // No need to update if there aren't any existing goods or the existing is empty for some reason
-        if (!expandedData.existing || Object.keys(expandedData.existing) === 0) {
+        if (!expandedData.existing || Object.keys(expandedData.existing).length === 0) {
             SasTrading.log(false, 'form data for existing trade goods was empty')
         } else {
             await SasTradingGoodData.updateGoods(expandedData.existing)
         }
 
         // 2. Copy new goods fields
-        if (!expandedData.new || Object.keys(expandedData.new) === 0) {
+        if (!expandedData.new || Object.keys(expandedData.new).length === 0) {
             SasTrading.log(false, 'form data for new trade goods was empty')
         } else {
             this.options.newGoods = foundry.utils.mergeObject(this.options.newGoods, expandedData.new)
@@ -566,8 +576,8 @@ class SasTradingGoodConfig extends FormApplication {
                 break
             case 'delete':
                 const confirmed = await Dialog.confirm({
-                    title: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm.title`),
-                    content: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm.content`)
+                    title: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm-good.title`),
+                    content: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm-good.content`)
                 })
 
                 if (confirmed) {
@@ -637,11 +647,9 @@ class SasTradingBaseGoodConfig extends FormApplication {
 
     async _updateObject(event, formData) {
         const expandedData = foundry.utils.expandObject(formData)
-        SasTrading.log(false, 'form data', formData)
-        SasTrading.log(false, 'saving', { expandedData })
 
         // 1. Update existing base good values
-        if (!expandedData.existing || Object.keys(expandedData.existing) === 0) {
+        if (!expandedData.existing || Object.keys(expandedData.existing).length === 0) {
             SasTrading.log(false, 'form data for existing trade good base values was empty')
         } else {
             // Sanitize form data here because updateBaseGoods doesn't
@@ -659,9 +667,10 @@ class SasTradingBaseGoodConfig extends FormApplication {
         }
 
         // 2. Copy new goods fields
-        if (!expandedData.new || Object.keys(expandedData.new) === 0) {
+        if (!expandedData.new || Object.keys(expandedData.new).length === 0) {
             SasTrading.log(false, 'form data for new trade good base values was empty')
         } else {
+            // TODO: Sanitize new goods' values
             this.options.newGoods = foundry.utils.mergeObject(this.options.newGoods, expandedData.new)
         }
 
@@ -674,7 +683,6 @@ class SasTradingBaseGoodConfig extends FormApplication {
     }
 
     async _handleButtonClick(event) {
-        SasTrading.log(false, 'button click event', event)
         const clickedElement = $(event.currentTarget)
         const action = clickedElement.data()?.action
         const baseGoodName = clickedElement.parents('[data-base-good-name]')?.data()?.baseGoodName
@@ -688,8 +696,8 @@ class SasTradingBaseGoodConfig extends FormApplication {
                 break
             case 'delete':
                 const confirmed = await Dialog.confirm({
-                    title: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm.title`),
-                    content: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm.content`)
+                    title: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm-good.title`),
+                    content: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm-good.content`)
                 })
 
                 if (confirmed) {
@@ -724,6 +732,99 @@ class SasTradingBaseGoodConfig extends FormApplication {
      */
     deleteNewGood(newGoodId) {
         this.options.newGoods = foundry.utils.mergeObject(this.options.newGoods, {[`-=${newGoodId}`]: null}, {performDeletions: true})
+    }
+}
+
+class SasTradingCitiesConfig extends FormApplication {
+    static get defaultOptions() {
+        const defaults = super.defaultOptions
+        const overrides = {
+            height: 'auto',
+            width: '250',
+            id: 'sas-trading-cities-config',
+            title: SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_CITIES}.title`),
+            template: SasTrading.TEMPLATES.CONFIG_CITIES,
+            closeOnSubmit: false,
+            submitOnChange: true,
+            resizable: true,
+            newCities: {}
+        }
+        const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
+
+        return mergedOptions
+    }
+
+    getData(options) {
+        return {
+            cities: SasTradingCitiesData.allCitiesSorted,
+            newCities: options.newCities
+        }
+    }
+
+    async _updateObject(event, formData) {
+        const expandedData = foundry.utils.expandObject(formData)
+        SasTrading.log(false, 'form data', formData)
+        SasTrading.log(false, 'saving', { expandedData })
+
+        // Because cities are immutable, there's no need to update the city data
+
+        // 1. Update new cities
+        if (!expandedData.new || Object.keys(expandedData.new).length === 0) {
+            SasTrading.log(false, 'form data for new cities was empty')
+        } else {
+            this.options.newCities = foundry.utils.mergeObject(this.options.newCities, expandedData.new)
+        }
+
+        this.render()
+    }
+
+    activateListeners(html) {
+        super.activateListeners(html)
+        html.on('click', '[data-action]', this._handleButtonClick.bind(this))
+    }
+
+    async _handleButtonClick(event) {
+        SasTrading.log(false, 'button click event', event)
+        const clickedElement = $(event.currentTarget)
+        const action = clickedElement.data()?.action
+        const cityName = clickedElement.parents('[data-city-name]')?.data()?.cityName
+        const newCityId = clickedElement.parents('[data-new-city-id]')?.data()?.newCityId
+
+        switch (action) {
+            case 'create':
+                const newlyCreatedCityId = foundry.utils.randomID(16)
+                this.options.newCities[newlyCreatedCityId] = { id: newlyCreatedCityId }
+                this.render()
+                break
+            case 'delete':
+                const confirmed = await Dialog.confirm({
+                    title: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm-city.title`),
+                    content: SasTrading.localize(`${SasTrading.LANG}.confirms.delete-confirm-city.content`)
+                })
+                if (confirmed) {
+                    await SasTradingCitiesData.deleteCity(cityName)
+                    this.render()
+                }
+                break
+            case 'confirm-create':
+                const newCity = this.options.newCities[newCityId]
+                if (!newCity.name) {
+                    SasTrading.log(false, 'cannot create city without a name')
+                    break
+                }
+                await SasTradingCitiesData.createCity(newCity.name)
+                this.deleteNewCity(newCityId)
+                this.render()
+                break
+        }
+    }
+
+    /**
+     * Helper to delete new cities from the list
+     * @param {string} newCityId 
+     */
+    deleteNewCity(newCityId) {
+        this.options.newCities = foundry.utils.mergeObject(this.options.newCities, {[`-=${newCityId}`]: null}, {performDeletions: true})
     }
 }
 

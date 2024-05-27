@@ -764,7 +764,7 @@ class SasTradingCitiesConfig extends FormApplication {
     async _updateObject(event, formData) {
         const expandedData = foundry.utils.expandObject(formData)
 
-        // Because cities are immutable, there's no need to update the city data
+        // Because cities are immutable, there's no need to update the existing city data
 
         // 1. Update new cities
         if (!expandedData.new || Object.keys(expandedData.new).length === 0) {

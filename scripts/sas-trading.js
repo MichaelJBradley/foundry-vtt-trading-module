@@ -949,7 +949,7 @@ class SasTradingMenu extends FormApplication {
             selectedCity: selectedCity,
             selectedGoodName: selectedGoodName,
             selectedGood: selectedGood,
-            selectedBuy: false
+            selectedBuy: true
         }
         const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
 
@@ -1067,21 +1067,6 @@ class SasTradingMenu extends FormApplication {
                     rejectClose: false,
                 })
                 break
-        }
-    }
-
-    /**
-     * emptyGood returns a single empty good so tables don't complain if a good
-     * hasn't been selected yet.
-     * @returns {SasGood} An empty good, with a value property appended.
-     */
-    static emptyGood() {
-        return {
-            id: "",
-            name: "",
-            demand: "",
-            scarcity: "",
-            value: ""
         }
     }
 }

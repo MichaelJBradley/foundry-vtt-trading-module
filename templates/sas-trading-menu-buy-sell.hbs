@@ -36,19 +36,19 @@
             <table class="sas-menu-mini-table">
                 {{#if selectedGood}}
                     <tr>
-                        <th class="sas-menu-table-left-column sas-menu-table-header"></th>
-                        <th class="sas-menu-table-header">{{selectedGood.name}}</th>
+                        <th class="sas-menu-mini-table-left-column sas-menu-mini-table-header"></th>
+                        <th class="sas-menu-mini-table-header">{{selectedGood.name}}</th>
                     </tr>
                     <tr>
-                        <td class="sas-menu-table-left-column">{{localize "SAS-TRADING.value"}}</td>
+                        <td class="sas-menu-mini-table-left-column">{{localize "SAS-TRADING.value"}}</td>
                         <td class="sas-menu-table-data">{{selectedGood.value}}</td>
                     </tr>
                     <tr>
-                        <td class="sas-menu-table-left-column">{{localize "SAS-TRADING.demand"}}</td>
+                        <td class="sas-menu-mini-table-left-column">{{localize "SAS-TRADING.demand"}}</td>
                         <td class="sas-menu-table-data">{{selectedGood.demand}}</td>
                     </tr>
                     <tr>
-                        <td class="sas-menu-table-left-column">{{localize "SAS-TRADING.scarcity"}}</td>
+                        <td class="sas-menu-mini-table-left-column">{{localize "SAS-TRADING.scarcity"}}</td>
                         <td class="sas-menu-table-data">{{selectedGood.scarcity}}</td>
                     </tr>
                 {{else}}

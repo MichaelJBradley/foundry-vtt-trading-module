@@ -996,7 +996,7 @@ class SasTradingMenu extends FormApplication {
         let update
         switch (tabId) {
             case SasTradingMenu.TABS.OVERVIEW:
-                this.options.selectedCity = expandedData.overview.selectedCity
+                this.options = SasTradingMenu.updateSelectedOptions(expandedData.overview.selectedCity, undefined, this.options)
                 break
             case SasTradingMenu.TABS.GATHER_INFO:
                 this.options = SasTradingMenu.updateSelectedOptions(expandedData.gatherInfo.selectedCity, expandedData.gatherInfo.selectedGood, this.options)

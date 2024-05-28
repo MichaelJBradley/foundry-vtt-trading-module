@@ -75,3 +75,12 @@ have gathered are accurate.
 #### Buy/sell
 
 Under construction
+
+## References
+
+This module would not have been possible without this
+[fantastic guide](https://hackmd.io/@akrigline/ByHFgUZ6u/%2FF4CFuxqZSTOcqgixEf9M6A)
+by Andrew Krigline.
+
+This module uses the GitHub action to package releases included in the
+[FoundryVTT-Module-Template repo](https://github.com/League-of-Foundry-Developers/FoundryVTT-Module-Template)

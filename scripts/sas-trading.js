@@ -1093,7 +1093,7 @@ class SasTradingMenu extends FormApplication {
     /**
      * updateSelected updates options using selections from the trading menu.
      * 
-     * It updates
+     * It updates the following values using the options { overwrite: true, recursive: false }
      *   - selectedCity
      *   - goodNames
      *   - goodsByCity
@@ -1128,7 +1128,7 @@ class SasTradingMenu extends FormApplication {
             selectedGoodName: resolvedSelectedGoodName,
             selectedGood: selectedGood
         }
-        return foundry.utils.mergeObject(options, updatedOptions)
+        return foundry.utils.mergeObject(options, updatedOptions, { overwrite: true, recursive: false })
     }
 }
 

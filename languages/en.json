@@ -60,9 +60,15 @@
                 "roll-accuracy": "Roll rumor accuracy",
                 "results": {
                     "title": "Gather rumors results",
-                    "content-success": "The rumors were accurate",
-                    "content-failure": "The rumors were innaccurate",
-                    "label": "Neat"
+                    "content": "The rumors were",
+                    "success": "ACCURATE",
+                    "failure": "INNACCURATE",
+                    "accuracy-thresh": "Accuracy threshold:",
+                    "accuracy-roll": "Accuracy roll:",
+                    "accuracy-base-title": "Base DC for accuracy roll",
+                    "diplo-roll-title": "Diplomacy check result",
+                    "diplo-dc-title": "Diplomacy DC",
+                    "close": "Close results"
                 }
             },
             "buy-sell": {

@@ -972,7 +972,8 @@ class SasTradingMenu extends FormApplication {
             selectedGoodName: options.selectedGoodName,
             selectedGood: options.selectedGood,
             diplomacyRoll: options.diplomacyRoll,
-            selectedBuy: options.selectedBuy
+            selectedBuy: options.selectedBuy,
+            gatherInfoResult: options.gatherInfoResult
         }
     }
 
@@ -1035,16 +1036,20 @@ class SasTradingMenu extends FormApplication {
                 // See written rules for more info
                 const accuracyThresh = SasTradingMenu.BASE_GATHER_INFO_ACCURACY + (this.options.diplomacyRoll - SasTradingMenu.GATHER_INFO_DIPLO_DC)
                 const accurate = accuracyRoll.total <= accuracyThresh
-                const contentLocal = accurate ?
-                    `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.content-success` :
-                    `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.content-failure`
-                Dialog.prompt({
-                    title: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.title`),
-                    content: SasTrading.localize(contentLocal),
-                    label: SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.label`),
-                    callback: (html) => SasTrading.log(false, 'accurate info:', accurate),
-                    rejectClose: false,
-                })
+                this.options.gatherInfoResult = {
+                    good: this.options.selectedGoodName,
+                    baseAccuracy: SasTradingMenu.BASE_GATHER_INFO_ACCURACY,
+                    diploDc: SasTradingMenu.GATHER_INFO_DIPLO_DC,
+                    diplomacyRoll: this.options.diplomacyRoll,
+                    accuracyThresh: accuracyThresh,
+                    accuracyRoll: accuracyRoll.total,
+                    accurate: accurate,
+                }
+                this.render()
+                break
+            case 'gatherInfo-close':
+                this.options.gatherInfoResult = undefined
+                this.render()
                 break
             case 'buySell-getPrice':
                 // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet

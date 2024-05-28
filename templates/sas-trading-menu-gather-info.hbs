@@ -56,6 +56,61 @@
             </table>
         </div>
     </div>
+    {{#if gatherInfoResult}}
+    <div class="sas-menu-results">
+        <h2>
+            {{localize "SAS-TRADING.trade-menu.gather-info.results.title"}}
+        </h2>
+        <div class="flexrow">
+            <div class="flex3"></div>
+            <button type="button" title="{{localize "SAS-TRADING.trade-menu.gather-info.results.close"}}" data-action="gatherInfo-close" class="flex0 sas-config-icon-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="flexrow">
+            <div class="flexcol sas-menu-results-gather-info">
+                {{! result column }}
+                <p>{{localize "SAS-TRADING.trade-menu.gather-info.results.content"}}</p>
+                {{#if gatherInfoResult.accurate}}
+                    <p class="sas-menu-results-gather-info-success">{{localize "SAS-TRADING.trade-menu.gather-info.results.success"}}</p>
+                {{else}}
+                    <p class="sas-menu-results-gather-info-failure">{{localize "SAS-TRADING.trade-menu.gather-info.results.failure"}}</p>
+                {{/if}}
+            </div>
+            <div class="flexcol">
+                {{! numbers column }}
+                <div class="flexrow">
+                    <div class="flexcol">
+                        {{! labels column }}
+                        <p>{{localize "SAS-TRADING.good"}}:</p>
+                        <p>{{localize "SAS-TRADING.trade-menu.gather-info.results.accuracy-thresh"}} </p>
+                        <p>{{localize "SAS-TRADING.trade-menu.gather-info.results.accuracy-roll"}} </p>
+                    </div>
+                    <div class="flexcol">
+                        {{! values column}}
+                        <p>{{gatherInfoResult.good}}</p>
+                        <div class="flexrow">
+                            <p>{{gatherInfoResult.accuracyThresh}}</p>
+                            <p>=</p>
+                            <p title="{{localize "SAS-TRADING.trade-menu.gather-info.results.accuracy-base-title"}}">
+                                {{gatherInfoResult.baseAccuracy}}
+                            </p>
+                            <p>+</p>
+                            <p title="{{localize "SAS-TRADING.trade-menu.gather-info.results.diplo-roll-title"}}">
+                                {{gatherInfoResult.diplomacyRoll}}
+                            </p>
+                            <p>-</p>
+                            <p title="{{localize "SAS-TRADING.trade-menu.gather-info.results.diplo-dc-title"}}">
+                                {{gatherInfoResult.diploDc}}
+                            </p>
+                        </div>
+                        <p>{{gatherInfoResult.accuracyRoll}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
     <button type="button" class="sas-menu-button" data-action="gatherInfo-roll">
         <i class="fas fa-dice-d20"></i>{{localize "SAS-TRADING.trade-menu.gather-info.roll-accuracy"}}
     </button>

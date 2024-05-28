@@ -62,3 +62,27 @@
 .sas-menu-content {
     margin-top: 10px;
 }
+
+.sas-menu-results {
+    margin-top: 10px;
+    border-top: 2px solid var(--color-underline-header);
+    border-bottom: 2px solid var(--color-underline-header);
+}
+
+.sas-menu-results > h2 {
+    text-align: center;
+}
+
+.sas-menu-results-gather-info {
+    text-align: center;
+}
+
+.sas-menu-results-gather-info-success {
+    font-weight: bold;
+    color: var(--color-level-success);
+}
+
+.sas-menu-results-gather-info-failure {
+    font-weight: bold;
+    color: var(--color-level-error);
+}

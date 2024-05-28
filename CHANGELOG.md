@@ -7,4 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Watch this spot
+### Added
+
+* Setup functionality to add cities and trade goods through Foundry settings
+* Trading menu to view trade goods, automate gather rumors, and calculate buy/sell prices

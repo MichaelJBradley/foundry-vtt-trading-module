@@ -993,7 +993,6 @@ class SasTradingMenu extends FormApplication {
      * @param {Object} expandedData formData after it has been expanded by foundry utils
      */
     updateObjectFromTab(tabId, expandedData) {
-        let update
         switch (tabId) {
             case SasTradingMenu.TABS.OVERVIEW:
                 this.options = SasTradingMenu.updateSelectedOptions(expandedData.overview.selectedCity, undefined, this.options)

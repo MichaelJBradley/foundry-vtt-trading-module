@@ -62,6 +62,63 @@
             </table>
         </div>
     </div>
+    {{#if buySellResult}}
+    <div class="sas-menu-results">
+        <h2>
+            {{#if buySellResult.buy}}
+                {{localize "SAS-TRADING.trade-menu.buy-sell.results.title-buy"}}
+            {{else}}
+                {{localize "SAS-TRADING.trade-menu.buy-sell.results.title-sell"}}
+            {{/if}}
+        </h2>
+        <div class="flexrow">
+            <div class="flex3"></div>
+            <button type="button" title="{{localize "SAS-TRADING.trade-menu.close-results"}}" data-action="buySell-close" class="flex0 sas-config-icon-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="flexrow">
+            <div class="flexcol sas-menu-results-buy-sell">
+                {{! result column }}
+                <p>{{localize "SAS-TRADING.trade-menu.buy-sell.results.content"}}</p>
+                <p class="sas-menu-results-buy-sell-price">{{buySellResult.price}}</p>
+            </div>
+            <div class="flexcol">
+                {{! numbers column }}
+                <div class="flexrow">
+                    <div class="flexcol">
+                        {{! labels column}}
+                        <p>{{localize "SAS-TRADING.good"}}:</p>
+                        <p>{{localize "SAS-TRADING.trade-menu.buy-sell.results.formula"}}</p>
+                    </div>
+                    <div class="flexcol flex2">
+                        {{! values column}}
+                        <p>{{buySellResult.good}}</p>
+                        <div class="flexrow">
+                            <p title="{{localize "SAS-TRADING.trade-menu.buy-sell.results.base-value-title"}}">{{buySellResult.value}}</p>
+                            <p>+</p>
+                            <p>&lpar;</p>
+                            <p title="{{localize "SAS-TRADING.trade-menu.buy-sell.results.base-value-title"}}">{{buySellResult.value}}</p>
+                            <p>&times;</p>
+                            <p>&lpar;</p>
+                            <p title="{{localize "SAS-TRADING.trade-menu.buy-sell.results.demand-mod-title"}}">{{buySellResult.demandMod}}</p>
+                            {{#if buySellResult.scarcityPos}}
+                                <p>+</p>
+                            {{else}}
+                                <p>-</p>
+                            {{/if}}
+                            <p title="{{localize "SAS-TRADING.trade-menu.buy-sell.results.scarcity-mod-title"}}">{{buySellResult.scarcityMod}}</p>
+                            <p>+</p>
+                            <p title="{{localize "SAS-TRADING.trade-menu.buy-sell.results.diplo-mod-title"}}">{{buySellResult.diploMod}}</p>
+                            <p>&rpar;</p>
+                            <p>&rpar;</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
     <button type="button" class="sas-menu-button" data-action="buySell-getPrice">
         <i class="fa-solid fa-coins"></i>{{localize "SAS-TRADING.trade-menu.buy-sell.get-price"}}
     </button>

@@ -973,7 +973,8 @@ class SasTradingMenu extends FormApplication {
             selectedGood: options.selectedGood,
             diplomacyRoll: options.diplomacyRoll,
             selectedBuy: options.selectedBuy,
-            gatherInfoResult: options.gatherInfoResult
+            gatherInfoResult: options.gatherInfoResult,
+            buySellResult: options.buySellResult
         }
     }
 
@@ -1084,6 +1085,7 @@ class SasTradingMenu extends FormApplication {
                 const buySellDiploMod = ((this.options.selectedBuy ? -1 : 1) * (this.options.diplomacyRoll - SasTradingMenu.BUY_SELL_DIPLO_DC)) / 100.0
                 // finalGoodValue factors in all the mods at once
                 const buySellFinalValue = buySellGood.value + (buySellGood.value * (buySellDemandMod + buySellScarictyMod + buySellDiploMod))
+                /*
                 Dialog.prompt({
                     title: 'Buy / sell results',
                     content: `Final cost: ${buySellFinalValue}`,
@@ -1091,6 +1093,24 @@ class SasTradingMenu extends FormApplication {
                     callback: (html) => SasTrading.log(false, 'final cost', buySellFinalValue, 'trade good', buySellGood),
                     rejectClose: false
                 })
+                */
+                SasTrading.log(false, 'before update', this.options)
+                this.options.buySellResult = {
+                    price: buySellFinalValue,
+                    good: buySellGood.name,
+                    value: buySellGood.value,
+                    buy: this.options.selectedBuy,
+                    demandMod: buySellDemandMod,
+                    scarcityMod: Math.abs(buySellScarictyMod),
+                    scarcityPos: buySellScarictyMod >= 0,
+                    diploMod: buySellDiploMod
+                }
+                SasTrading.log(false, 'after update', this.options)
+                this.render()
+                break
+            case 'buySell-close':
+                this.options.buySellResult = undefined
+                this.render()
                 break
         }
     }

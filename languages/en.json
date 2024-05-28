@@ -51,6 +51,7 @@
             "title": "Swords & Sandals trading menu",
             "diplomacy-roll": "Diplomacy roll:",
             "no-good-selected": "Select a good from the left to get started",
+            "close-results": "Close results",
             "overview": {
                 "tab-title": "Overview",
                 "missing-goods": "No trade goods configured for this city. Configure them in the module's settings first."
@@ -67,15 +68,24 @@
                     "accuracy-roll": "Accuracy roll:",
                     "accuracy-base-title": "Base DC for accuracy roll",
                     "diplo-roll-title": "Diplomacy check result",
-                    "diplo-dc-title": "Diplomacy DC",
-                    "close": "Close results"
+                    "diplo-dc-title": "Diplomacy DC"
                 }
             },
             "buy-sell": {
                 "tab-title": "Buy / Sell",
                 "buy": "Buy",
                 "sell": "Sell",
-                "get-price": "Get price per unit"
+                "get-price": "Get price per unit",
+                "results": {
+                    "title-buy": "Buy results",
+                    "title-sell": "Sell results",
+                    "content": "Final price",
+                    "formula": "Price formula:",
+                    "base-value-title": "Base value",
+                    "demand-mod-title": "Demand modifier",
+                    "scarcity-mod-title": "Supply modifier",
+                    "diplo-mod-title": "Diplomacy check modifier"
+                }
             }
         },
         "confirms": {

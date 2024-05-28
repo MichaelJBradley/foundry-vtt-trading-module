@@ -17,6 +17,8 @@
     "readme": "README.md",
     "changelog": "https://github.com/MichaelJBradley/foundry-vtt-trading-module/blob/main/CHANGELOG.md",
     "bugs": "https://github.com/MichaelJBradley/foundry-vtt-trading-module/issues",
+    "url": "https://github.com/MichaelJBradley/foundry-vtt-trading-module",
+    "manifest": "https://github.com/MichaelJBradley/foundry-vtt-trading-module/releases/latest/download/module.json",
     "scripts": [
         "scripts/sas-trading.js"
     ],

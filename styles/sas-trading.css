@@ -86,3 +86,12 @@
     font-weight: bold;
     color: var(--color-level-error);
 }
+
+.sas-menu-results-buy-sell {
+    text-align: center;
+}
+
+.sas-menu-results-buy-sell-price {
+    font-weight: bold;
+    font-size: medium;
+}

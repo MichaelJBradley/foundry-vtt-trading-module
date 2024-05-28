@@ -899,17 +899,23 @@ class SasTradingMenu extends FormApplication {
         SELL: 'sell'
     })
 
+    // TODO: make these settings, so they can be changed by the GM
     static BASE_GATHER_INFO_ACCURACY = 70
+    static GATHER_INFO_DIPLO_DC = 20
+    static BUY_SELL_DIPLO_DC = 25
+    static DEMAND_MODS = {
+        [SasTradingGoodData.demand.HIGH]: 0.1,
+        [SasTradingGoodData.demand.AVG]: 0.0,
+        [SasTradingGoodData.demand.LOW]: -0.1,
+    }
+    static SCARCITY_MODS = {
+        [SasTradingGoodData.scarcity.RARE]: 0.05,
+        [SasTradingGoodData.scarcity.COMMON]: 0.0,
+        [SasTradingGoodData.scarcity.ABUNDANT]: -0.05,
+    }
 
     static get defaultOptions() {
         const defaults = super.defaultOptions
-
-        const selectedCity = SasTradingCitiesData.allCitiesSorted[0]
-        const goodsByCity = SasTradingGoodData.goodsByCity[selectedCity]
-        const selectedGoodName = goodsByCity ? Object.keys(goodsByCity)[0] : ""
-        // If there's no good selected, set it to undefined. This way the handlebars template can check
-        // and display a placeholder table until one is selected.
-        const selectedGood = selectedGoodName ? goodsByCity[selectedGoodName] : undefined
 
         const overrides = {
             height: 'auto',
@@ -946,43 +952,25 @@ class SasTradingMenu extends FormApplication {
                 }
             ],
             activeTab: this.TABS.OVERVIEW,
-            selectedCity: selectedCity,
-            selectedGoodName: selectedGoodName,
-            selectedGood: selectedGood,
             selectedBuy: true
         }
-        const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
+        const selectedCity = SasTradingCitiesData.allCitiesSorted[0]
+        const updatedOverrides = this.updateSelectedOptions(selectedCity, undefined, overrides)
+        const mergedOptions = foundry.utils.mergeObject(defaults, updatedOverrides)
 
         return mergedOptions
     }
 
     getData(options) {
-        const goodsByCity = SasTradingGoodData.goodsByCity[options.selectedCity] || {}
-        const baseGoods = SasTradingBaseGoodData.allBaseGoods
-        const goodNames = Object.keys(goodsByCity)
-        goodNames.forEach(name => {
-            goodsByCity[name].value = baseGoods[name]
-        })
-        // Try updating the selected good name based on the list if there isn't one already
-        // This way, if a city has no goods and a new city is selected with goods, it pulls the first
-        // good from the list.
-        // If a good is already selected, just carry it over
-        const selectedGoodName = this.options.selectedGoodName ? this.options.selectedGoodName :
-            (goodsByCity ? Object.keys(goodsByCity)[0] : "")
-        // If there's no good selected, set it to undefined. This way the handlebars template can check
-        // and display a placeholder table until one is selected.
-        const selectedGood = selectedGoodName ? goodsByCity[selectedGoodName] : undefined
-        SasTrading.log(false, 'goods', goodsByCity, 'for city', options.selectedCity)
-        SasTrading.log(false, 'selected good', selectedGood)
         return {
             tabs: options.tabData,
-            goodsByCity: goodsByCity,
-            goodNames: goodNames,
-            numGoods: goodNames.length,
+            goodsByCity: options.goodsByCity,
+            goodNames: options.goodNames,
+            numGoods: options.goodNames.length,
             cities: SasTradingCitiesData.allCitiesSorted,
             selectedCity: options.selectedCity,
-            selectedGoodName: selectedGoodName,
-            selectedGood: selectedGood,
+            selectedGoodName: options.selectedGoodName,
+            selectedGood: options.selectedGood,
             diplomacyRoll: options.diplomacyRoll,
             selectedBuy: options.selectedBuy
         }
@@ -993,11 +981,9 @@ class SasTradingMenu extends FormApplication {
         const activeTab = updatedElement.parents('[data-tab]')?.data()?.tab
         const expandedData = foundry.utils.expandObject(formData)
         SasTrading.log(false, 'saving', expandedData)
-
         // Tabs return similar info through different inputs, so update data based on
         // which tab is selected
         this.updateObjectFromTab(activeTab, expandedData)
-
         this.render()
     }
 
@@ -1007,23 +993,16 @@ class SasTradingMenu extends FormApplication {
      * @param {Object} expandedData formData after it has been expanded by foundry utils
      */
     updateObjectFromTab(tabId, expandedData) {
-        let selectedGoodName
         switch (tabId) {
             case SasTradingMenu.TABS.OVERVIEW:
-                this.options.selectedCity = expandedData.overview.selectedCity
+                this.options = SasTradingMenu.updateSelectedOptions(expandedData.overview.selectedCity, undefined, this.options)
                 break
             case SasTradingMenu.TABS.GATHER_INFO:
-                selectedGoodName = expandedData.gatherInfo.selectedGoodName
-                this.options.selectedCity = expandedData.gatherInfo.selectedCity
-                this.options.selectedGoodName = expandedData.gatherInfo.selectedGood
-                this.options.selectedGood = selectedGoodName ? this.options.goodsByCity[selectedGoodName] : undefined
+                this.options = SasTradingMenu.updateSelectedOptions(expandedData.gatherInfo.selectedCity, expandedData.gatherInfo.selectedGood, this.options)
                 this.options.diplomacyRoll = expandedData.gatherInfo.diplomacyRoll
                 break
             case SasTradingMenu.TABS.BUY_SELL:
-                selectedGoodName = expandedData.buySell.selectedGoodName
-                this.options.selectedCity = expandedData.buySell.selectedCity
-                this.options.selectedGoodName = expandedData.buySell.selectedGood
-                this.options.selectedGood = selectedGoodName ? this.options.goodsByCity[selectedGoodName] : undefined
+                this.options = SasTradingMenu.updateSelectedOptions(expandedData.buySell.selectedCity, expandedData.buySell.selectedGood, this.options)
                 this.options.diplomacyRoll = expandedData.buySell.diplomacyRoll
                 this.options.selectedBuy = expandedData.buySell.choice === SasTradingMenu.BUY_SELL.BUY
                 break
@@ -1047,14 +1026,14 @@ class SasTradingMenu extends FormApplication {
                     break
                 }
                 // The DC for the check is 20, so if it's below that we can keep going, but the result might be innacurate
-                if (this.options.diplomacyRoll < 20) {
+                if (this.options.diplomacyRoll < SasTradingMenu.GATHER_INFO_DIPLO_DC) {
                     SasTrading.log(false, 'diplomacy roll was less than 20 for a DC 20 diplomacy check')
                 }
                 const accuracyRoll = new Roll('d100')
                 await accuracyRoll.toMessage({}, { rollMode: 'gmroll' })
-                // This is the equation for determining whether gathered info is accurate
+                // This is the formula for determining whether gathered info is accurate
                 // See written rules for more info
-                const accuracyThresh = SasTradingMenu.BASE_GATHER_INFO_ACCURACY + (this.options.diplomacyRoll - 20)
+                const accuracyThresh = SasTradingMenu.BASE_GATHER_INFO_ACCURACY + (this.options.diplomacyRoll - SasTradingMenu.GATHER_INFO_DIPLO_DC)
                 const accurate = accuracyRoll.total <= accuracyThresh
                 const contentLocal = accurate ?
                     `${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.TRADE_GATHER_INFO}.results.content-success` :
@@ -1067,7 +1046,89 @@ class SasTradingMenu extends FormApplication {
                     rejectClose: false,
                 })
                 break
+            case 'buySell-getPrice':
+                // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
+                if (!this.options.diplomacyRoll) {
+                    SasTrading.log(false, 'missing diplomacy roll result')
+                    break
+                }
+                // Ensure a good is selected and all required properties exist
+                if (!this.options.selectedGood) {
+                    SasTrading.log(false, 'missing trade good', this.options.selectedGood)
+                    break
+                }
+                const buySellGood = this.options.selectedGood
+                if (!buySellGood.value) {
+                    SasTrading.log(false, 'missing trade good value', buySellGood)
+                    break
+                }
+                if (!buySellGood.demand) {
+                    SasTrading.log(false, 'missing trade good demand', buySellGood)
+                    break
+                }
+                if (!buySellGood.scarcity) {
+                    SasTrading.log(false, 'missing trade good scarcity', buySellGood)
+                    break
+                }
+
+                // This is the formula for determining the final buy/sell price of a trade good
+                // See written rules for more info
+                const buySellDemandMod = SasTradingMenu.DEMAND_MODS[buySellGood.demand]
+                const buySellScarictyMod = SasTradingMenu.SCARCITY_MODS[buySellGood.scarcity]
+                // buySellDiploMod increases or decrease the price based on whether players are selling or buying, respectively
+                const buySellDiploMod = ((this.options.selectedBuy ? -1 : 1) * (this.options.diplomacyRoll - SasTradingMenu.BUY_SELL_DIPLO_DC)) / 100.0
+                // finalGoodValue factors in all the mods at once
+                const buySellFinalValue = buySellGood.value + (buySellGood.value * (buySellDemandMod + buySellScarictyMod + buySellDiploMod))
+                Dialog.prompt({
+                    title: 'Buy / sell results',
+                    content: `Final cost: ${buySellFinalValue}`,
+                    label: "Neat",
+                    callback: (html) => SasTrading.log(false, 'final cost', buySellFinalValue, 'trade good', buySellGood),
+                    rejectClose: false
+                })
+                break
         }
+    }
+
+    /**
+     * updateSelected updates options using selections from the trading menu.
+     * 
+     * It updates the following values using the options { overwrite: true, recursive: false }
+     *   - selectedCity
+     *   - goodNames
+     *   - goodsByCity
+     *   - selectedGoodName
+     *   - selectedGood
+     * @param {SasCityName} selectedCity 
+     * @param {SasGoodName|undefined} selectedGoodName 
+     * @param {Object} options The options to update
+     * @returns {Object} The updated options object. That is, the options after they have been merged with updates
+     */
+    static updateSelectedOptions(selectedCity, selectedGoodName, options) {
+        const goodsByCity = SasTradingGoodData.goodsByCity[selectedCity] || {}
+        const baseGoods = SasTradingBaseGoodData.allBaseGoods
+        const goodNames = Object.keys(goodsByCity)
+        goodNames.forEach(name => {
+            goodsByCity[name].value = baseGoods[name]
+        })
+        // Try updating the selected good name based on the list if there isn't one already
+        // This way, if a city has no goods and a new city is selected with goods, it pulls the first
+        // good from the list.
+        // If a good is already selected, just carry it over
+        const resolvedSelectedGoodName = selectedGoodName ? selectedGoodName :
+            (goodsByCity ? Object.keys(goodsByCity)[0] : "")
+        // If there's no good selected, set it to undefined. This way the handlebars template can check
+        // and display a placeholder table until one is selected.
+        const selectedGood = resolvedSelectedGoodName ? goodsByCity[resolvedSelectedGoodName] : undefined
+
+        const updatedOptions = {
+            selectedCity: selectedCity,
+            goodNames: goodNames,
+            goodsByCity: goodsByCity,
+            selectedGoodName: resolvedSelectedGoodName,
+            selectedGood: selectedGood
+        }
+        return foundry.utils.mergeObject(options, updatedOptions, { overwrite: true, recursive: false })
     }
 }
 

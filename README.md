@@ -51,8 +51,7 @@ in it, and allows you to add new ones.
 
 There are two ways to add trade goods to each city. 
 
-1. Use the **Add all** button to add all trade goods to a city
-   (*this does not exist yet, but it will soon!*)
+1. Use the **Auto create goods** button to add all trade goods to a city
   * As the name implies, this adds all defined trade goods to a city with default supply and demand
     values.
 1. Use the **Create trade good** button to add trade goods one by one
@@ -74,7 +73,8 @@ have gathered are accurate.
 
 #### Buy/sell
 
-Under construction
+The buy/sell tab calculates the buy or sell price for a given trade good at a specified city.
+It factors in the supply, demand, and player's diplomacy roll.
 
 ## References
 

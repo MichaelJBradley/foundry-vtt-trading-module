@@ -284,6 +284,36 @@ class SasTradingGoodData {
     }
 
     /**
+     * createGoods adds any nonexistent goods from the provided array.
+     * 
+     * If good.id is left undefined, it will be generated and filled in.
+     * If a good already exists, it will be ignored. This does not prevent
+     * other, nonexistent goods from being created.
+     * @param {Array<SasGood>} goods 
+     */
+    static createGoods(goods) {
+        const goodsData = Object.fromEntries(goods.map(good => {
+            if (!good.name || !good.city) {
+                SasTrading.log(false, 'good must have at least name and city properties', good)
+                return
+            }
+            if (!good.id) {
+                good.id = this.goodId(good.name, good.city)
+            } else if (good.id !== this.goodId(good.name, good.city)) {
+                SasTrading.log(false, 'good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
+                return
+            }
+
+            return [good.id, good]
+        }))
+        SasTrading.log(false, 'goodsData', goodsData)
+        // Don't overwrite any existing goods with the same IDs, only add new ones
+        const existingGoods = this.allGoods
+        const updatedGoods = foundry.utils.mergeObject(existingGoods, goodsData, {overwrite: false})
+        return SasTrading.setSetting(SasTrading.SETTINGS.GOODS, updatedGoods)
+    }
+
+    /**
      * updateGood updates an existing good by ID.
      * 
      * This merges the existing good with the provided good.
@@ -623,6 +653,17 @@ class SasTradingGoodConfig extends FormApplication {
                 // Until then, a random ID can be used to handle new goods.
                 const newGoodId = foundry.utils.randomID(16)
                 this.options.newGoods[newGoodId] = {id: newGoodId}
+                this.render()
+                break
+            case 'auto-create':
+                const autoCreateSelectedCity = this.options.selectedCity
+                const autoCreatedGoods = SasTradingBaseGoodData.allBaseGoodsList.map(baseGood => {
+                    return {
+                        name: baseGood.name,
+                        city: autoCreateSelectedCity,
+                    }
+                })
+                SasTradingGoodData.createGoods(autoCreatedGoods)
                 this.render()
                 break
             case 'delete':

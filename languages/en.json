@@ -16,6 +16,8 @@
                     "hint": "Add, remove, and update trade goods by city",
                     "title": "Trade goods config",
                     "create-good": "Create trade good",
+                    "auto-create-goods": "Auto create goods",
+                    "auto-create-goods-title": "Create goods for those defined in base values",
                     "delete-good": "Delete trade good",
                     "confirm-create": "Confirm trade good creation. Name cannot be modified after.",
                     "cancel-create": "Cancel trade good creation",

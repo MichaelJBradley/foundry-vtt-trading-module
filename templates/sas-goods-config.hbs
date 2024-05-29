@@ -71,7 +71,14 @@
             </li>
         {{/each}}
     </ul>
-    <button type="button" data-action="create">
-        <i class="fas fa-plus"></i>{{localize "SAS-TRADING.settings.config.goods-menu.create-good"}}
-    </button>
+    <div class="flexcol">
+        <div class="flexrow">
+            <button type="button" data-action="create">
+                <i class="fas fa-plus"></i>{{localize "SAS-TRADING.settings.config.goods-menu.create-good"}}
+            </button>
+            <button type="button" data-action="auto-create" title="{{localize "SAS-TRADING.settings.config.goods-menu.auto-create-goods-title"}}">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>{{localize "SAS-TRADING.settings.config.goods-menu.auto-create-goods"}}
+            </button>
+        </div>
+    </div>
 </form>

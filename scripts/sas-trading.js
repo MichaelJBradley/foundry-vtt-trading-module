@@ -591,6 +591,7 @@ class SasTradingGoodConfig extends FormApplication {
             closeOnSubmit: false,
             submitOnChange: true,
             resizable: true,
+            scrollY: ['[save-scroll-existing=true]', '[save-scroll-new=true]'],
             selectedCity: SasTradingCitiesData.allCitiesSorted[0],
             newGoods: {},
         }
@@ -723,6 +724,7 @@ class SasTradingBaseGoodConfig extends FormApplication {
             closeOnSubmit: false,
             submitOnChange: true,
             resizable: true,
+            scrollY: ['[save-scroll-existing=true]', '[save-scroll-new=true]'],
             newGoods: {}
         }
         const mergedOptions = foundry.utils.mergeObject(defaults, overrides)
@@ -844,6 +846,7 @@ class SasTradingCitiesConfig extends FormApplication {
             closeOnSubmit: false,
             submitOnChange: true,
             resizable: true,
+            scrollY: ['[save-scroll-existing=true]', '[save-scroll-new=true]'],
             newCities: {}
         }
         const mergedOptions = foundry.utils.mergeObject(defaults, overrides)

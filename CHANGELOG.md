@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Prevent menus with variable content, like trade goods and cities, from expanding to the
-  screen height.
+* Prevent menus with variable content, like trade goods and cities, from expanding to fill the
+  entire screen.
 
 ## [0.2.1]
 

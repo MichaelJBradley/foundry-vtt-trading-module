@@ -110,6 +110,24 @@ class SasTrading {
         } catch (e) { }
     }
 
+    /**
+     * log an error to the console prefixed with ID.
+     * 
+     * @param  {...any} args 
+     */
+    static warn(force, ...args) {
+        console.warn(this.ID, '|', ...args)
+    }
+
+    /**
+     * log an error to the console prefixed with ID.
+     * 
+     * @param  {...any} args 
+     */
+    static error(...args) {
+        console.error(this.ID, '|', ...args)
+    }
+
     static registerSettings() {
         game.settings.register(this.ID, this.SETTINGS.GOODS, {
             scope: 'world',
@@ -203,7 +221,7 @@ class SasTrading {
             }
             const noteButtons = buttons.filter(button => button.name === 'notes')
             if (!noteButtons || noteButtons.length === 0) {
-                SasTrading.log(false, 'could not find the notes control button')
+                SasTrading.error('could not find the notes control button')
                 return
             }
             const noteButton = noteButtons[0]
@@ -262,19 +280,19 @@ class SasTradingGoodData {
      */
     static createGood(good) {
         if (!good.name || !good.city) {
-            SasTrading.log(false, 'good must have at least name and city properties', good)
+            SasTrading.error('good must have at least name and city properties', good)
             return
         }
         if (!good.id) {
             good.id = this.goodId(good.name, good.city)
         } else if (good.id !== this.goodId(good.name, good.city)) {
-            SasTrading.log(false, 'good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
+            SasTrading.error(false, 'good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
             return
         }
 
         const goods = this.allGoods
         if (goods.hasOwnProperty(good.id)) {
-            SasTrading.log(false, 'good already exists:', good.id)
+            SasTrading.warn('good already exists:', good.id)
             // TODO: Application Warning? Error?
             return
         }
@@ -294,19 +312,18 @@ class SasTradingGoodData {
     static createGoods(goods) {
         const goodsData = Object.fromEntries(goods.map(good => {
             if (!good.name || !good.city) {
-                SasTrading.log(false, 'good must have at least name and city properties', good)
+                SasTrading.error(false, 'good must have at least name and city properties', good)
                 return
             }
             if (!good.id) {
                 good.id = this.goodId(good.name, good.city)
             } else if (good.id !== this.goodId(good.name, good.city)) {
-                SasTrading.log(false, 'good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
+                SasTrading.error(false, 'good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
                 return
             }
 
             return [good.id, good]
         }))
-        SasTrading.log(false, 'goodsData', goodsData)
         // Don't overwrite any existing goods with the same IDs, only add new ones
         const existingGoods = this.allGoods
         const updatedGoods = foundry.utils.mergeObject(existingGoods, goodsData, {overwrite: false})
@@ -325,27 +342,27 @@ class SasTradingGoodData {
     static updateGood(id, good) {
         // Validate the provided good.id is correct
         if (good.id && good.id !== id) {
-            SasTrading.log(false, 'good.id does not match id:', id, good)
+            SasTrading.error('good.id does not match id:', id, good)
             return
         }
         // If good name and city are provided, they must result in the same ID
         if ((good.name && good.city) && id !== this.goodId(good.name, good.city)) {
-            SasTrading.log(false, 'provided good name and city do not match id:', id, good)
+            SasTrading.error('provided good name and city do not match id:', id, good)
             return
         }
         const goods = this.allGoods
         if (!goods.hasOwnProperty(id)) {
-            SasTrading.log(false, 'good does not exist:', id)
+            SasTrading.error('good does not exist:', id)
             // TODO: Application warning? Error?
             return
         }
         // Name and city can never change
         if (good.name && good.name !== goods[id].name) {
-            SasTrading.log(false, 'cannot change name:', 'provided:', good, 'existing:', goods[id])
+            SasTrading.error('cannot change name:', 'provided:', good, 'existing:', goods[id])
             return
         }
         if (good.city && good.city !== goods[id].city) {
-            SasTrading.log(false, 'cannot change city:', 'provided:', good, 'existing:', goods[id])
+            SasTrading.error('cannot change city:', 'provided:', good, 'existing:', goods[id])
             return
         }
 
@@ -373,7 +390,7 @@ class SasTradingGoodData {
     static deleteGood(id) {
         const goods = this.allGoods
         if (!goods.hasOwnProperty(id)) {
-            SasTrading.log(false, 'good does not exist:', id)
+            SasTrading.error('good does not exist:', id)
             // TODO: Application warning? Error?
             return
         }
@@ -431,7 +448,7 @@ class SasTradingGoodData {
     static getGood(id) {
         const goods = this.allGoods
         if (!goods.hasOwnProperty(id)) {
-            SasTrading.log(false, 'good with does not exist with id:', id)
+            SasTrading.error('good with does not exist with id:', id)
             return
         }
         return goods[id]
@@ -448,7 +465,7 @@ class SasTradingBaseGoodData {
     static createBaseGood(goodName, baseValue) {
         const baseGoods = this.allBaseGoods
         if (baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.log(false, 'base good already exists:', goodName)
+            SasTrading.warn('base good already exists:', goodName)
             return
         }
 
@@ -464,7 +481,7 @@ class SasTradingBaseGoodData {
     static updateBaseGood(goodName, baseValue) {
         const baseGoods = this.allBaseGoods
         if (!baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.log(false, 'base good does not exist with name:', goodName)
+            SasTrading.error('base good does not exist with name:', goodName)
             return
         }
 
@@ -492,7 +509,7 @@ class SasTradingBaseGoodData {
     static deleteBaseGood(goodName) {
         const baseGoods = this.allBaseGoods
         if (!baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.log(false, 'base good does not exist with name:', goodName)
+            SasTrading.error('base good does not exist with name:', goodName)
             return
         }
 
@@ -508,7 +525,7 @@ class SasTradingBaseGoodData {
     static getBaseGood(goodName) {
         const baseGoods = this.allBaseGoods
         if (!baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.log(false, 'base good does not exist with name:', goodName)
+            SasTrading.error('base good does not exist with name:', goodName)
             return
         }
         return baseGoods[goodName]
@@ -543,7 +560,7 @@ class SasTradingCitiesData {
     static createCity(cityName) {
         const cities = this.allCities
         if (cities.includes(cityName)) {
-            SasTrading.log(false, 'city already exists:', cityName)
+            SasTrading.warn('city already exists:', cityName)
             return
         }
 
@@ -554,7 +571,7 @@ class SasTradingCitiesData {
     static deleteCity(cityName) {
         const cities = this.allCities
         if (!cities.includes(cityName)) {
-            SasTrading.log(false, 'city does not exist with name:', cityName)
+            SasTrading.error('city does not exist with name:', cityName)
             return
         }
 
@@ -620,14 +637,14 @@ class SasTradingGoodConfig extends FormApplication {
         // 1. Update existing goods data
         // No need to update if there aren't any existing goods or the existing is empty for some reason
         if (!expandedData.existing || Object.keys(expandedData.existing).length === 0) {
-            SasTrading.log(false, 'form data for existing trade goods was empty')
+            SasTrading.log(false, 'form data for existing trade goods was empty', expandedData)
         } else {
             await SasTradingGoodData.updateGoods(expandedData.existing)
         }
 
         // 2. Copy new goods fields
         if (!expandedData.new || Object.keys(expandedData.new).length === 0) {
-            SasTrading.log(false, 'form data for new trade goods was empty')
+            SasTrading.log(false, 'form data for new trade goods was empty', expandedData)
         } else {
             this.options.newGoods = foundry.utils.mergeObject(this.options.newGoods, expandedData.new)
         }
@@ -681,7 +698,8 @@ class SasTradingGoodConfig extends FormApplication {
             case 'confirm-create':
                 const newGood = this.options.newGoods[goodId]
                 if (!newGood.name) {
-                    SasTrading.log(false, 'cannot create trade good without a name', newGood)
+                    SasTrading.error('cannot create trade good without a name', newGood)
+                    // TODO: notification
                     break
                 }
                 const city = clickedElement.parents('[data-good-city]')?.data()?.goodCity
@@ -746,7 +764,7 @@ class SasTradingBaseGoodConfig extends FormApplication {
 
         // 1. Update existing base good values
         if (!expandedData.existing || Object.keys(expandedData.existing).length === 0) {
-            SasTrading.log(false, 'form data for existing trade good base values was empty')
+            SasTrading.log(false, 'form data for existing trade good base values was empty', expandedData)
         } else {
             // Sanitize form data here because updateBaseGoods doesn't
             // If any of the values aren't a number, drop them completely
@@ -764,7 +782,7 @@ class SasTradingBaseGoodConfig extends FormApplication {
 
         // 2. Copy new goods fields
         if (!expandedData.new || Object.keys(expandedData.new).length === 0) {
-            SasTrading.log(false, 'form data for new trade good base values was empty')
+            SasTrading.log(false, 'form data for new trade good base values was empty', expandedData)
         } else {
             this.options.newGoods = foundry.utils.mergeObject(this.options.newGoods, expandedData.new)
         }
@@ -803,15 +821,18 @@ class SasTradingBaseGoodConfig extends FormApplication {
             case 'confirm-create':
                 const newGood = this.options.newGoods[newGoodId]
                 if (!newGood.name) {
-                    SasTrading.log(false, 'cannot create trade good without a name', newGood)
+                    SasTrading.error('cannot create trade good without a name', newGood)
+                    // TODO: notification
                     break
                 }
                 if (!newGood.value) {
-                    SasTrading.log(false, 'cannot create trade good without a value', newGood)
+                    SasTrading.error('cannot create trade good without a value', newGood)
+                    // TODO: notification
                     break
                 }
                 if (typeof newGood.value !== 'number') {
-                    SasTrading.log(false, 'trade good must have a number value', newGood)
+                    SasTrading.error('trade good must have a number value', newGood)
+                    // TODO: notification
                     break
                 }
                 await SasTradingBaseGoodData.createBaseGood(newGood.name, newGood.value)
@@ -868,7 +889,7 @@ class SasTradingCitiesConfig extends FormApplication {
 
         // 1. Update new cities
         if (!expandedData.new || Object.keys(expandedData.new).length === 0) {
-            SasTrading.log(false, 'form data for new cities was empty')
+            SasTrading.log(false, 'form data for new cities was empty', expandedData)
         } else {
             this.options.newCities = foundry.utils.mergeObject(this.options.newCities, expandedData.new)
         }
@@ -906,7 +927,8 @@ class SasTradingCitiesConfig extends FormApplication {
             case 'confirm-create':
                 const newCity = this.options.newCities[newCityId]
                 if (!newCity.name) {
-                    SasTrading.log(false, 'cannot create city without a name')
+                    SasTrading.error('cannot create city without a name', newCity)
+                    // TODO: notification
                     break
                 }
                 await SasTradingCitiesData.createCity(newCity.name)
@@ -1068,12 +1090,12 @@ class SasTradingMenu extends FormApplication {
             case 'gatherInfo-roll':
                 // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
                 if (!this.options.diplomacyRoll) {
-                    SasTrading.log(false, 'missing diplomacy roll result')
+                    SasTrading.warn('missing diplomacy roll result')
                     break
                 }
                 // The DC for the check is 20, so if it's below that we can keep going, but the result might be innacurate
                 if (this.options.diplomacyRoll < SasTradingMenu.GATHER_INFO_DIPLO_DC) {
-                    SasTrading.log(false, 'diplomacy roll was less than 20 for a DC 20 diplomacy check')
+                    SasTrading.warn('diplomacy roll was less than 20 for a DC 20 diplomacy check')
                 }
                 const accuracyRoll = new Roll('d100')
                 await accuracyRoll.toMessage({}, { rollMode: 'gmroll' })
@@ -1099,25 +1121,25 @@ class SasTradingMenu extends FormApplication {
             case 'buySell-getPrice':
                 // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
                 if (!this.options.diplomacyRoll) {
-                    SasTrading.log(false, 'missing diplomacy roll result')
+                    SasTrading.warn('missing diplomacy roll result')
                     break
                 }
                 // Ensure a good is selected and all required properties exist
                 if (!this.options.selectedGood) {
-                    SasTrading.log(false, 'missing trade good', this.options.selectedGood)
+                    SasTrading.warn('missing trade good', this.options.selectedGood)
                     break
                 }
                 const buySellGood = this.options.selectedGood
                 if (!buySellGood.value) {
-                    SasTrading.log(false, 'missing trade good value', buySellGood)
+                    SasTrading.warn('missing trade good value', buySellGood)
                     break
                 }
                 if (!buySellGood.demand) {
-                    SasTrading.log(false, 'missing trade good demand', buySellGood)
+                    SasTrading.warn('missing trade good demand', buySellGood)
                     break
                 }
                 if (!buySellGood.scarcity) {
-                    SasTrading.log(false, 'missing trade good scarcity', buySellGood)
+                    SasTrading.warn('missing trade good scarcity', buySellGood)
                     break
                 }
 
@@ -1129,16 +1151,6 @@ class SasTradingMenu extends FormApplication {
                 const buySellDiploMod = ((this.options.selectedBuy ? -1 : 1) * (this.options.diplomacyRoll - SasTradingMenu.BUY_SELL_DIPLO_DC)) / 100.0
                 // finalGoodValue factors in all the mods at once
                 const buySellFinalValue = buySellGood.value + (buySellGood.value * (buySellDemandMod + buySellScarictyMod + buySellDiploMod))
-                /*
-                Dialog.prompt({
-                    title: 'Buy / sell results',
-                    content: `Final cost: ${buySellFinalValue}`,
-                    label: "Neat",
-                    callback: (html) => SasTrading.log(false, 'final cost', buySellFinalValue, 'trade good', buySellGood),
-                    rejectClose: false
-                })
-                */
-                SasTrading.log(false, 'before update', this.options)
                 this.options.buySellResult = {
                     price: buySellFinalValue,
                     good: buySellGood.name,
@@ -1149,7 +1161,6 @@ class SasTradingMenu extends FormApplication {
                     scarcityPos: buySellScarictyMod >= 0,
                     diploMod: buySellDiploMod
                 }
-                SasTrading.log(false, 'after update', this.options)
                 this.render()
                 break
             case 'buySell-close':

@@ -13,7 +13,7 @@
             <p class="flex1">{{localize "SAS-TRADING.total-goods"}} {{numGoods}}</p>
         </div>
     </div>
-    <ul class="sas-config flexcol">
+    <ul class="sas-config flexcol" save-scroll-existing="true">
         {{#each goodsByCity as | good |}}
             <li class="flexrow" data-good-id="{{good.id}}">
                 <p><b>{{good.name}}</b></p>
@@ -42,7 +42,7 @@
             {{localize "SAS-TRADING.settings.config.goods-menu.missing-goods"}}
         {{/each}}
     </ul>
-    <ul class="sas-config flexcol">
+    <ul class="sas-config flexcol" save-scroll-new="true">
         {{#each newGoods as | newGood | }}
             <li class="flexrow" data-good-id="{{newGood.id}}" data-good-city="{{../selectedCity}}">
                 <input type="text" value="{{newGood.name}}" name="new.{{newGood.id}}.name" data-dtype="String" />

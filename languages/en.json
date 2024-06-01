@@ -79,7 +79,7 @@
                     "title": "Gather rumors results",
                     "content": "The rumors were",
                     "success": "ACCURATE",
-                    "failure": "INNACCURATE",
+                    "failure": "INACCURATE",
                     "accuracy-thresh": "Accuracy threshold:",
                     "accuracy-roll": "Accuracy roll:",
                     "accuracy-base-title": "Base DC for accuracy roll",

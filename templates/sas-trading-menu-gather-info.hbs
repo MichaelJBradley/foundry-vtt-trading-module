@@ -83,12 +83,14 @@
                     <div class="flexcol">
                         {{! labels column }}
                         <p>{{localize "SAS-TRADING.good"}}:</p>
+                        <p>{{localize "SAS-TRADING.demand"}}, {{localize "SAS-TRADING.scarcity"}}</p>
                         <p>{{localize "SAS-TRADING.trade-menu.gather-info.results.accuracy-thresh"}} </p>
                         <p>{{localize "SAS-TRADING.trade-menu.gather-info.results.accuracy-roll"}} </p>
                     </div>
                     <div class="flexcol">
                         {{! values column}}
                         <p>{{gatherInfoResult.good}}</p>
+                        <p>{{capitalize gatherInfoResult.demand}}, {{capitalize gatherInfoResult.scarcity}}</p>
                         <div class="flexrow">
                             <p>{{gatherInfoResult.accuracyThresh}}</p>
                             <p>=</p>

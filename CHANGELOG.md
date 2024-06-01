@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+* Error and warning notification on invalid input throughout the module
+* Display trade good's demand and scarcity in gather info results
+* Generate random demand and scarcity pair on failed gather info results
+
+### Fixed
+
+* Typo in gather info results
+
 ## [0.3.0]
 
 ### Fixed

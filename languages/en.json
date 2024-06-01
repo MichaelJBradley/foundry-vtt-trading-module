@@ -21,7 +21,10 @@
                     "delete-good": "Delete trade good",
                     "confirm-create": "Confirm trade good creation. Name cannot be modified after.",
                     "cancel-create": "Cancel trade good creation",
-                    "missing-goods": "No trade goods configured for this city"
+                    "missing-goods": "No trade goods configured for this city",
+                    "notifications": {
+                        "no-name": "Cannot create a trade good without a name"
+                    }
                 },
                 "base-goods-menu": {
                     "name": "Configure base values",
@@ -34,7 +37,12 @@
                     "delete-good": "Delete trade good",
                     "confirm-create": "Confirm trade good creation. Name cannot be modified after.",
                     "cancel-create": "Cancel trade good creation",
-                    "missing-goods": "No trade goods configured"
+                    "missing-goods": "No trade goods configured",
+                    "notifications": {
+                        "no-name": "Cannot create a trade good without a name",
+                        "no-value": "Cannot create a trade good without a value",
+                        "nan": "Trade good value must be a number"
+                    }
                 },
                 "cities-menu": {
                     "name": "Configure cities",
@@ -45,7 +53,10 @@
                     "delete-city": "Delete city",
                     "confirm-create": "Confirm city creation. Name cannot be modified after.",
                     "cancel-create": "Cancel city creation",
-                    "missing-cities": "No cities configured"
+                    "missing-cities": "No cities configured",
+                    "notifications": {
+                        "no-name": "Cannot create a trade good without a name"
+                    }
                 }
             }
         },
@@ -88,6 +99,13 @@
                     "scarcity-mod-title": "Supply modifier",
                     "diplo-mod-title": "Diplomacy check modifier"
                 }
+            },
+            "notifications": {
+                "no-diplo-roll": "Missing diplomacy roll",
+                "no-trade-good": "Missing trade good",
+                "trade-good-missing-value": "Trade good missing value. This can be configured in the module's settings.",
+                "trade-good-missing-demand": "Trade good missing demand. This can be configured in the module's settings.",
+                "trade-good-missing-scarcity": "Trade good missing supply. This can be configured in the module's settings."
             }
         },
         "confirms": {

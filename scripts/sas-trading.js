@@ -77,7 +77,8 @@ class SasTrading {
         CONFIG: 'config',
         CONFIG_GOODS: 'goods-menu',
         CONFIG_BASE: 'base-goods-menu',
-        CONFIG_CITIES: 'cities-menu'
+        CONFIG_CITIES: 'cities-menu',
+        NOTIFICATIONS: 'notifications'
     }
     static CONTROLS = {
         TOOLS: 'tools',
@@ -87,7 +88,8 @@ class SasTrading {
         TRADE: 'trade-menu',
         TRADE_OVERVIEW: 'overview',
         TRADE_GATHER_INFO: 'gather-info',
-        TRADE_BUY_SELL: 'buy-sell'
+        TRADE_BUY_SELL: 'buy-sell',
+        NOTIFICATIONS: 'notifications'
     }
     static GM_ROLE = 4
 
@@ -699,7 +701,7 @@ class SasTradingGoodConfig extends FormApplication {
                 const newGood = this.options.newGoods[goodId]
                 if (!newGood.name) {
                     SasTrading.error('cannot create trade good without a name', newGood)
-                    // TODO: notification
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.${SasTrading.SETTINGS.NOTIFICATIONS}.no-name`))
                     break
                 }
                 const city = clickedElement.parents('[data-good-city]')?.data()?.goodCity
@@ -822,17 +824,17 @@ class SasTradingBaseGoodConfig extends FormApplication {
                 const newGood = this.options.newGoods[newGoodId]
                 if (!newGood.name) {
                     SasTrading.error('cannot create trade good without a name', newGood)
-                    // TODO: notification
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.${SasTrading.SETTINGS.NOTIFICATIONS}.no-name`))
                     break
                 }
                 if (!newGood.value) {
                     SasTrading.error('cannot create trade good without a value', newGood)
-                    // TODO: notification
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.${SasTrading.SETTINGS.NOTIFICATIONS}.no-value`))
                     break
                 }
                 if (typeof newGood.value !== 'number') {
                     SasTrading.error('trade good must have a number value', newGood)
-                    // TODO: notification
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.${SasTrading.SETTINGS.NOTIFICATIONS}.nan`))
                     break
                 }
                 await SasTradingBaseGoodData.createBaseGood(newGood.name, newGood.value)
@@ -928,7 +930,7 @@ class SasTradingCitiesConfig extends FormApplication {
                 const newCity = this.options.newCities[newCityId]
                 if (!newCity.name) {
                     SasTrading.error('cannot create city without a name', newCity)
-                    // TODO: notification
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_CITIES}.${SasTrading.SETTINGS.NOTIFICATIONS}.no-name`))
                     break
                 }
                 await SasTradingCitiesData.createCity(newCity.name)
@@ -1091,6 +1093,7 @@ class SasTradingMenu extends FormApplication {
                 // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
                 if (!this.options.diplomacyRoll) {
                     SasTrading.warn('missing diplomacy roll result')
+                    ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.no-diplo-roll`))
                     break
                 }
                 // The DC for the check is 20, so if it's below that we can keep going, but the result might be innacurate
@@ -1122,24 +1125,29 @@ class SasTradingMenu extends FormApplication {
                 // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
                 if (!this.options.diplomacyRoll) {
                     SasTrading.warn('missing diplomacy roll result')
+                    ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.no-diplo-roll`))
                     break
                 }
                 // Ensure a good is selected and all required properties exist
                 if (!this.options.selectedGood) {
                     SasTrading.warn('missing trade good', this.options.selectedGood)
+                    ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.no-trade-good`))
                     break
                 }
                 const buySellGood = this.options.selectedGood
                 if (!buySellGood.value) {
-                    SasTrading.warn('missing trade good value', buySellGood)
+                    SasTrading.error('missing trade good value', buySellGood)
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.trade-good-missing-value`))
                     break
                 }
                 if (!buySellGood.demand) {
-                    SasTrading.warn('missing trade good demand', buySellGood)
+                    SasTrading.error('missing trade good demand', buySellGood)
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.trade-good-missing-demand`))
                     break
                 }
                 if (!buySellGood.scarcity) {
-                    SasTrading.warn('missing trade good scarcity', buySellGood)
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.trade-good-missing-scarcity`))
+                    SasTrading.error('missing trade good scarcity', buySellGood)
                     break
                 }
 

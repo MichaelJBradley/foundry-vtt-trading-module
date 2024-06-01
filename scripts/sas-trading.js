@@ -206,7 +206,11 @@ class SasTrading {
     static initialize() {
         this.registerSettings()
         this.tradingMenu = new SasTradingMenu()
-        
+
+        Handlebars.registerHelper('capitalize', (context, options) => {
+            return new Handlebars.SafeString(context.charAt(0).toUpperCase() + context.slice(1))
+        })
+
         // Handlebars partials need to be loaded in ahead of time to
         //   1. Tell foundry to load them
         //   2. Register them as partials with Handlebars

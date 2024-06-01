@@ -22,7 +22,7 @@
                 <select id="demand-{{good.id}}" name="existing.{{good.id}}.demand">
                     {{#each ../demands}}
                         <option value="{{this}}" {{#if (eq good.demand this)}}selected{{/if}}>
-                            {{this}}
+                            {{capitalize this}}
                         </option>
                     {{/each}}
                 </select>
@@ -30,7 +30,7 @@
                 <select id="scarcity-{{good.id}}" name="existing.{{good.id}}.scarcity">
                     {{#each ../scarcities}}
                         <option value="{{this}}" {{#if (eq good.scarcity this)}}selected{{/if}}>
-                            {{this}}
+                            {{capitalize this}}
                         </option>
                     {{/each}}
                 </select>
@@ -50,7 +50,7 @@
                 <select id="demand-{{newGood.id}}" name="new.{{newGood.id}}.demand">
                     {{#each ../demands}}
                         <option value="{{this}}" {{#if (eq newGood.demand this)}}selected{{/if}}>
-                            {{this}}
+                            {{capitalize this}}
                         </option>
                     {{/each}}
                 </select>
@@ -58,7 +58,7 @@
                 <select id="scarcity-{{newGood.id}}" name="new.{{newGood.id}}.scarcity">
                     {{#each ../scarcities}}
                         <option value="{{this}}" {{#if (eq newGood.scarcity this)}}selected{{/if}}>
-                            {{this}}
+                            {{capitalize this}}
                         </option>
                     {{/each}}
                 </select>

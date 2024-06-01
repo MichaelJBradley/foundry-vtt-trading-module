@@ -203,6 +203,24 @@ class SasTrading {
         return game.i18n.localize(languageKey)
     }
 
+
+    /**
+     * randomProperty returns the entry of a random property for the given
+     * object.
+     * 
+     * @param {{any: any}} obj 
+     * @returns {[any, any]} The entry of the random property [key, value].
+     */
+    static randomProperty(obj) {
+        const keys = Object.keys(obj)
+        const exclusiveMax = keys.length
+        const randIndex = Math.floor(Math.random() * exclusiveMax)
+        return [
+            keys[randIndex],
+            obj[keys[randIndex]]
+        ]
+    }
+
     static initialize() {
         this.registerSettings()
         this.tradingMenu = new SasTradingMenu()
@@ -298,7 +316,7 @@ class SasTradingGoodData {
 
         const goods = this.allGoods
         if (goods.hasOwnProperty(good.id)) {
-            SasTrading.warn('good already exists:', good.id)
+            SasTrading.warn(true, 'good already exists:', good.id)
             ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.${SasTrading.SETTINGS.NOTIFICATIONS}.already-exists`))
             return
         }
@@ -471,7 +489,7 @@ class SasTradingBaseGoodData {
     static createBaseGood(goodName, baseValue) {
         const baseGoods = this.allBaseGoods
         if (baseGoods.hasOwnProperty(goodName)) {
-            SasTrading.warn('base good already exists:', goodName)
+            SasTrading.warn(true, 'base good already exists:', goodName)
             ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.${SasTrading.SETTINGS.NOTIFICATIONS}.already-exists`))
             return
         }
@@ -567,7 +585,7 @@ class SasTradingCitiesData {
     static createCity(cityName) {
         const cities = this.allCities
         if (cities.includes(cityName)) {
-            SasTrading.warn('city already exists:', cityName)
+            SasTrading.warn(true, 'city already exists:', cityName)
             ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.${SasTrading.SETTINGS.NOTIFICATIONS}.already-exists`))
             return
         }
@@ -1098,13 +1116,24 @@ class SasTradingMenu extends FormApplication {
             case 'gatherInfo-roll':
                 // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
                 if (!this.options.diplomacyRoll) {
-                    SasTrading.warn('missing diplomacy roll result')
+                    SasTrading.warn(true, 'missing diplomacy roll result')
                     ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.no-diplo-roll`))
                     break
                 }
                 // The DC for the check is 20, so if it's below that we can keep going, but the result might be innacurate
                 if (this.options.diplomacyRoll < SasTradingMenu.GATHER_INFO_DIPLO_DC) {
-                    SasTrading.warn('diplomacy roll was less than 20 for a DC 20 diplomacy check')
+                    SasTrading.warn(true, 'diplomacy roll was less than 20 for a DC 20 diplomacy check')
+                }
+                const gatherInfoGood = this.options.selectedGood
+                if (!gatherInfoGood.demand) {
+                    SasTrading.error('missing trade good demand', gatherInfoGood)
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.trade-good-missing-demand`))
+                    break
+                }
+                if (!gatherInfoGood.scarcity) {
+                    ui.notifications.error(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.trade-good-missing-scarcity`))
+                    SasTrading.error('missing trade good scarcity', gatherInfoGood)
+                    break
                 }
                 const accuracyRoll = new Roll('d100')
                 await accuracyRoll.toMessage({}, { rollMode: 'gmroll' })
@@ -1112,8 +1141,13 @@ class SasTradingMenu extends FormApplication {
                 // See written rules for more info
                 const accuracyThresh = SasTradingMenu.BASE_GATHER_INFO_ACCURACY + (this.options.diplomacyRoll - SasTradingMenu.GATHER_INFO_DIPLO_DC)
                 const accurate = accuracyRoll.total <= accuracyThresh
+                // If the info was inaccurate, generate random demand and scarcity
+                const gatherInfoDemand = accurate ? gatherInfoGood.demand : SasTrading.randomProperty(SasTradingGoodData.demand)[1]
+                const gatherInfoScarcity = accurate ? gatherInfoGood.scarcity : SasTrading.randomProperty(SasTradingGoodData.scarcity)[1]
                 this.options.gatherInfoResult = {
                     good: this.options.selectedGoodName,
+                    demand: gatherInfoDemand,
+                    scarcity: gatherInfoScarcity,
                     baseAccuracy: SasTradingMenu.BASE_GATHER_INFO_ACCURACY,
                     diploDc: SasTradingMenu.GATHER_INFO_DIPLO_DC,
                     diplomacyRoll: this.options.diplomacyRoll,
@@ -1130,13 +1164,13 @@ class SasTradingMenu extends FormApplication {
             case 'buySell-getPrice':
                 // The diplomacy roll is needed for the full evaluation, just break early if it's not in yet
                 if (!this.options.diplomacyRoll) {
-                    SasTrading.warn('missing diplomacy roll result')
+                    SasTrading.warn(true, 'missing diplomacy roll result')
                     ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.no-diplo-roll`))
                     break
                 }
                 // Ensure a good is selected and all required properties exist
                 if (!this.options.selectedGood) {
-                    SasTrading.warn('missing trade good', this.options.selectedGood)
+                    SasTrading.warn(true, 'missing trade good', this.options.selectedGood)
                     ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.no-trade-good`))
                     break
                 }

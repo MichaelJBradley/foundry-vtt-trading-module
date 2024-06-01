@@ -295,7 +295,7 @@ class SasTradingGoodData {
         const goods = this.allGoods
         if (goods.hasOwnProperty(good.id)) {
             SasTrading.warn('good already exists:', good.id)
-            // TODO: Application Warning? Error?
+            ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_GOODS}.${SasTrading.SETTINGS.NOTIFICATIONS}.already-exists`))
             return
         }
 
@@ -468,6 +468,7 @@ class SasTradingBaseGoodData {
         const baseGoods = this.allBaseGoods
         if (baseGoods.hasOwnProperty(goodName)) {
             SasTrading.warn('base good already exists:', goodName)
+            ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.${SasTrading.SETTINGS.NOTIFICATIONS}.already-exists`))
             return
         }
 
@@ -563,6 +564,7 @@ class SasTradingCitiesData {
         const cities = this.allCities
         if (cities.includes(cityName)) {
             SasTrading.warn('city already exists:', cityName)
+            ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.settings.${SasTrading.SETTINGS.CONFIG}.${SasTrading.SETTINGS.CONFIG_BASE}.${SasTrading.SETTINGS.NOTIFICATIONS}.already-exists`))
             return
         }
 

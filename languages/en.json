@@ -23,7 +23,8 @@
                     "cancel-create": "Cancel trade good creation",
                     "missing-goods": "No trade goods configured for this city",
                     "notifications": {
-                        "no-name": "Cannot create a trade good without a name"
+                        "no-name": "Cannot create a trade good without a name",
+                        "already-exists": "Trade good with this name already exists for this city"
                     }
                 },
                 "base-goods-menu": {
@@ -41,7 +42,8 @@
                     "notifications": {
                         "no-name": "Cannot create a trade good without a name",
                         "no-value": "Cannot create a trade good without a value",
-                        "nan": "Trade good value must be a number"
+                        "nan": "Trade good value must be a number",
+                        "already-exists": "Trade good with this name already exists"
                     }
                 },
                 "cities-menu": {
@@ -55,7 +57,8 @@
                     "cancel-create": "Cancel city creation",
                     "missing-cities": "No cities configured",
                     "notifications": {
-                        "no-name": "Cannot create a trade good without a name"
+                        "no-name": "Cannot create a trade good without a name",
+                        "already-exists": "City with this name already exists"
                     }
                 }
             }

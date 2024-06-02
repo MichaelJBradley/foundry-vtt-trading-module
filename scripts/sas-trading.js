@@ -1159,9 +1159,6 @@ class SasTradingMenu extends FormApplication {
                     accurate: accurate,
                 }
                 this.render()
-                // TODO: ChatMessage.create() to create a message
-                // create takes an object with at least the field "content"
-                // I think I can call renderTemplate("path-to-template", {data for template}) to fill in content
                 ChatMessage.create({
                     content: await renderTemplate(SasTrading.TEMPLATES.CHAT.GATHER_INFO, this.options),
                     speaker: {alias: SasTrading.localize(`${SasTrading.LANG}.module-short`)}

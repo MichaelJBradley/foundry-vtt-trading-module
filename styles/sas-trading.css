@@ -99,11 +99,13 @@
 
 .sas-menu-results-gather-info-success {
     font-weight: bold;
+    font-size: medium;
     color: var(--color-level-success);
 }
 
 .sas-menu-results-gather-info-failure {
     font-weight: bold;
+    font-size: medium;
     color: var(--color-level-error);
 }
 

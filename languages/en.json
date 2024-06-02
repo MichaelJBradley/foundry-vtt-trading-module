@@ -1,5 +1,6 @@
 {
     "SAS-TRADING": {
+        "module-short": "Swords & Sandals Trading",
         "demand": "Demand",
         "scarcity": "Supply",
         "good": "Trade good",

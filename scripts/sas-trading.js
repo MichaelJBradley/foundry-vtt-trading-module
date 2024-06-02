@@ -67,6 +67,9 @@ class SasTrading {
             MENU_OVERVIEW: `modules/${this.ID}/templates/sas-trading-menu-overview.hbs`,
             MENU_GATHER_INFO: `modules/${this.ID}/templates/sas-trading-menu-gather-info.hbs`,
             MENU_BUY_SELL: `modules/${this.ID}/templates/sas-trading-menu-buy-sell.hbs`
+        },
+        CHAT: {
+            GATHER_INFO: `modules/${this.ID}/templates/sas-chat-gather-info-result.hbs`
         }
     }
     static SETTINGS = {
@@ -1156,6 +1159,13 @@ class SasTradingMenu extends FormApplication {
                     accurate: accurate,
                 }
                 this.render()
+                // TODO: ChatMessage.create() to create a message
+                // create takes an object with at least the field "content"
+                // I think I can call renderTemplate("path-to-template", {data for template}) to fill in content
+                ChatMessage.create({
+                    content: await renderTemplate(SasTrading.TEMPLATES.CHAT.GATHER_INFO, this.options),
+                    speaker: {alias: SasTrading.localize(`${SasTrading.LANG}.module-short`)}
+                })
                 break
             case 'gatherInfo-close':
                 this.options.gatherInfoResult = undefined

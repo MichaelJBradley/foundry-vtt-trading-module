@@ -30,7 +30,8 @@
         "templates/sas-trading-menu.hbs",
         "templates/sas-trading-menu-overview.hbs",
         "templates/sas-trading-menu-gather-info.hbs",
-        "templates/sas-trading-menu-buy-sell.hbs"
+        "templates/sas-trading-menu-buy-sell.hbs",
+        "templates/sas-chat-gather-info-result.hbs"
     ],
     "styles": [
         "styles/sas-trading.css"

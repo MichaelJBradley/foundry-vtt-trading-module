@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Display trade good's demand and scarcity in gather info results
 * Generate random demand and scarcity pair on failed gather info results
 * Post player facing gather info results to chat
+* Settings to configure buy/sell and gather info DCs
 
 ### Fixed
 

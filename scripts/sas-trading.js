@@ -73,15 +73,20 @@ class SasTrading {
         }
     }
     static SETTINGS = {
-        GOODS: 'goods',           // see {SasGoods}
-        BASE_GOODS: 'base-goods', // see {SasBaseGood}
-        CITIES: 'cities',         // see {SasCities}
+        GOODS: 'goods',                               // type {SasGoods}
+        BASE_GOODS: 'base-goods',                     // type {SasBaseGood}
+        CITIES: 'cities',                             // type {SasCities}
+        GATHER_INFO_ACCURACY: 'gather-info-accuracy', // type {number}
+        GATHER_INFO_DIPLO_DC: 'gather-info-diplo',    // type {number}
+        GATHER_INFO_CHAT: 'gather-info-chat',         // type {boolean}
+        BUY_SELL_DIPLO_DC: 'buy-sell-diplo',          // type {number}
         // Lang refs
         CONFIG: 'config',
         CONFIG_GOODS: 'goods-menu',
         CONFIG_BASE: 'base-goods-menu',
         CONFIG_CITIES: 'cities-menu',
-        NOTIFICATIONS: 'notifications'
+        NOTIFICATIONS: 'notifications',
+        INDIVIDUAL: 'individual',
     }
     static CONTROLS = {
         TOOLS: 'tools',
@@ -176,12 +181,48 @@ class SasTrading {
             type: SasTradingGoodConfig,
             restricted: true
         })
+        game.settings.register(this.ID, this.SETTINGS.GATHER_INFO_ACCURACY, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.GATHER_INFO_ACCURACY}.name`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.GATHER_INFO_ACCURACY}.hint`,
+            scope: 'world',
+            config: true,
+            type: Number,
+            default: 70,
+            onChange: value => this.setSetting(this.SETTINGS.GATHER_INFO_ACCURACY, value)
+        })
+        game.settings.register(this.ID, this.SETTINGS.GATHER_INFO_DIPLO_DC, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.GATHER_INFO_DIPLO_DC}.name`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.GATHER_INFO_DIPLO_DC}.hint`,
+            scope: 'world',
+            config: true,
+            type: Number,
+            default: 20,
+            onChange: value => this.setSetting(this.SETTINGS.GATHER_INFO_DIPLO_DC, value)
+        })
+        game.settings.register(this.ID, this.SETTINGS.GATHER_INFO_CHAT, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.GATHER_INFO_CHAT}.name`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.GATHER_INFO_CHAT}.hint`,
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true,
+            onChange: value => this.setSetting(this.SETTINGS.GATHER_INFO_CHAT, value)
+        })
+        game.settings.register(this.ID, this.SETTINGS.BUY_SELL_DIPLO_DC, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.BUY_SELL_DIPLO_DC}.name`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.BUY_SELL_DIPLO_DC}.hint`,
+            scope: 'world',
+            config: true,
+            type: Number,
+            default: 25,
+            onChange: value => this.setSetting(this.SETTINGS.BUY_SELL_DIPLO_DC, value)
+        })
     }
 
     /**
      * getSettings is a helper to retrieve a setting with this module's ID.
      * @param {string} settingName 
-     * @returns {(SasGoods|SasBaseGoods|SasCities)} See SETTINGS for more info.
+     * @returns {(SasGoods|SasBaseGoods|SasCities|number|boolean)} See SETTINGS for more info.
      */
     static getSetting(settingName) {
         return game.settings.get(this.ID, settingName)
@@ -190,7 +231,7 @@ class SasTrading {
     /**
      * setSetting is a helper to store a setting with this module's ID.
      * @param {string} settingName 
-     * @param {(SasGoods|SasBaseGoods|SasCities)} data See SETTINGS for typedefs
+     * @param {(SasGoods|SasBaseGoods|SasCities|number|boolean)} data See SETTINGS for typedefs
      */
     static async setSetting(settingName, data) {
         return game.settings.set(this.ID, settingName, data)
@@ -995,9 +1036,6 @@ class SasTradingMenu extends FormApplication {
     })
 
     // TODO: make these settings, so they can be changed by the GM
-    static BASE_GATHER_INFO_ACCURACY = 70
-    static GATHER_INFO_DIPLO_DC = 20
-    static BUY_SELL_DIPLO_DC = 25
     static DEMAND_MODS = {
         [SasTradingGoodData.demand.HIGH]: 0.1,
         [SasTradingGoodData.demand.AVG]: 0.0,
@@ -1123,9 +1161,10 @@ class SasTradingMenu extends FormApplication {
                     ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.no-diplo-roll`))
                     break
                 }
-                // The DC for the check is 20, so if it's below that we can keep going, but the result might be innacurate
-                if (this.options.diplomacyRoll < SasTradingMenu.GATHER_INFO_DIPLO_DC) {
-                    SasTrading.warn(true, 'diplomacy roll was less than 20 for a DC 20 diplomacy check')
+                // If the diplo roll is below the DC, we can keep going, but the result might be innacurate
+                const gatherInfoDiploDc = SasTrading.getSetting(SasTrading.SETTINGS.GATHER_INFO_DIPLO_DC)
+                if (this.options.diplomacyRoll < gatherInfoDiploDc) {
+                    SasTrading.warn(true, `diplomacy roll was less than DC ${gatherInfoDiploDc} diplomacy check`)
                 }
                 const gatherInfoGood = this.options.selectedGood
                 if (!gatherInfoGood.demand) {
@@ -1142,7 +1181,8 @@ class SasTradingMenu extends FormApplication {
                 await accuracyRoll.toMessage({}, { rollMode: 'gmroll' })
                 // This is the formula for determining whether gathered info is accurate
                 // See written rules for more info
-                const accuracyThresh = SasTradingMenu.BASE_GATHER_INFO_ACCURACY + (this.options.diplomacyRoll - SasTradingMenu.GATHER_INFO_DIPLO_DC)
+                const accuracyBase = SasTrading.getSetting(SasTrading.SETTINGS.GATHER_INFO_ACCURACY)
+                const accuracyThresh = accuracyBase + (this.options.diplomacyRoll - gatherInfoDiploDc)
                 const accurate = accuracyRoll.total <= accuracyThresh
                 // If the info was inaccurate, generate random demand and scarcity
                 const gatherInfoDemand = accurate ? gatherInfoGood.demand : SasTrading.randomProperty(SasTradingGoodData.demand)[1]
@@ -1151,18 +1191,20 @@ class SasTradingMenu extends FormApplication {
                     good: this.options.selectedGoodName,
                     demand: gatherInfoDemand,
                     scarcity: gatherInfoScarcity,
-                    baseAccuracy: SasTradingMenu.BASE_GATHER_INFO_ACCURACY,
-                    diploDc: SasTradingMenu.GATHER_INFO_DIPLO_DC,
+                    baseAccuracy: accuracyBase,
+                    diploDc: gatherInfoDiploDc,
                     diplomacyRoll: this.options.diplomacyRoll,
                     accuracyThresh: accuracyThresh,
                     accuracyRoll: accuracyRoll.total,
                     accurate: accurate,
                 }
                 this.render()
-                ChatMessage.create({
-                    content: await renderTemplate(SasTrading.TEMPLATES.CHAT.GATHER_INFO, this.options),
-                    speaker: {alias: SasTrading.localize(`${SasTrading.LANG}.module-short`)}
-                })
+                if (SasTrading.getSetting(SasTrading.SETTINGS.GATHER_INFO_CHAT)) {
+                    ChatMessage.create({
+                        content: await renderTemplate(SasTrading.TEMPLATES.CHAT.GATHER_INFO, this.options),
+                        speaker: { alias: SasTrading.localize(`${SasTrading.LANG}.module-short`) }
+                    })
+                }
                 break
             case 'gatherInfo-close':
                 this.options.gatherInfoResult = undefined
@@ -1202,8 +1244,9 @@ class SasTradingMenu extends FormApplication {
                 // See written rules for more info
                 const buySellDemandMod = SasTradingMenu.DEMAND_MODS[buySellGood.demand]
                 const buySellScarictyMod = SasTradingMenu.SCARCITY_MODS[buySellGood.scarcity]
+                const buySellDiploDc = SasTrading.getSetting(SasTrading.SETTINGS.BUY_SELL_DIPLO_DC)
                 // buySellDiploMod increases or decrease the price based on whether players are selling or buying, respectively
-                const buySellDiploMod = ((this.options.selectedBuy ? -1 : 1) * (this.options.diplomacyRoll - SasTradingMenu.BUY_SELL_DIPLO_DC)) / 100.0
+                const buySellDiploMod = ((this.options.selectedBuy ? -1 : 1) * (this.options.diplomacyRoll - buySellDiploDc)) / 100.0
                 // finalGoodValue factors in all the mods at once
                 const buySellFinalValue = buySellGood.value + (buySellGood.value * (buySellDemandMod + buySellScarictyMod + buySellDiploMod))
                 this.options.buySellResult = {

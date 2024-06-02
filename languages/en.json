@@ -62,6 +62,24 @@
                         "already-exists": "City with this name already exists"
                     }
                 }
+            },
+            "individual": {
+                "gather-info-accuracy": {
+                    "name": "Gather rumors accuracy",
+                    "hint": "The base value for whether gather rumors is accurate. Default: 70"
+                },
+                "gather-info-diplo": {
+                    "name": "Gather rumors diplomacy DC",
+                    "hint": "The DC by which gather rumors accuracy increases or decreases. Default: 20"
+                },
+                "gather-info-chat": {
+                    "name": "Post gather rumors results",
+                    "hint": "Whether to post gather rumors results to the chat. Default: yes"
+                },
+                "buy-sell-diplo": {
+                    "name": "Buy/Sell diplomacy DC",
+                    "hint": "The DC by which a buy or sell price increases or decreases. Default 25"
+                }
             }
         },
         "trade-menu": {

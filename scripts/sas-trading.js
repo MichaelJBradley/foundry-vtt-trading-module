@@ -73,13 +73,13 @@ class SasTrading {
         }
     }
     static SETTINGS = {
-        GOODS: 'goods',           // see {SasGoods}
-        BASE_GOODS: 'base-goods', // see {SasBaseGood}
-        CITIES: 'cities',         // see {SasCities}
-        GATHER_INFO_ACCURACY: 'gather-info-accuracy',
-        GATHER_INFO_DIPLO_DC: 'gather-info-diplo',
-        GATHER_INFO_CHAT: 'gather-info-chat',
-        BUY_SELL_DIPLO_DC: 'buy-sell-diplo',
+        GOODS: 'goods',                               // type {SasGoods}
+        BASE_GOODS: 'base-goods',                     // type {SasBaseGood}
+        CITIES: 'cities',                             // type {SasCities}
+        GATHER_INFO_ACCURACY: 'gather-info-accuracy', // type {number}
+        GATHER_INFO_DIPLO_DC: 'gather-info-diplo',    // type {number}
+        GATHER_INFO_CHAT: 'gather-info-chat',         // type {boolean}
+        BUY_SELL_DIPLO_DC: 'buy-sell-diplo',          // type {number}
         // Lang refs
         CONFIG: 'config',
         CONFIG_GOODS: 'goods-menu',
@@ -1161,8 +1161,11 @@ class SasTradingMenu extends FormApplication {
                     ui.notifications.warn(SasTrading.localize(`${SasTrading.LANG}.${SasTrading.MENU.TRADE}.${SasTrading.MENU.NOTIFICATIONS}.no-diplo-roll`))
                     break
                 }
-                // The DC for the check is a setting, so if it's below that we can keep going, but the result might be innacurate
+                // If the diplo roll is below the DC, we can keep going, but the result might be innacurate
                 const gatherInfoDiploDc = SasTrading.getSetting(SasTrading.SETTINGS.GATHER_INFO_DIPLO_DC)
+                if (this.options.diplomacyRoll < gatherInfoDiploDc) {
+                    SasTrading.warn(true, `diplomacy roll was less than DC ${gatherInfoDiploDc} diplomacy check`)
+                }
                 const gatherInfoGood = this.options.selectedGood
                 if (!gatherInfoGood.demand) {
                     SasTrading.error('missing trade good demand', gatherInfoGood)

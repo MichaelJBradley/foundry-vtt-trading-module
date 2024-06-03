@@ -1271,8 +1271,7 @@ class SasTradingMenu extends FormApplication {
                 const buySellDemandMod = SasTradingMenu.DEMAND_MODS[buySellGood.demand]
                 const buySellScarictyMod = SasTradingMenu.SCARCITY_MODS[buySellGood.scarcity]
                 const buySellDiploDc = SasTrading.getSetting(SasTrading.SETTINGS.BUY_SELL_DIPLO_DC)
-                const buySellDiploMod = ((this.options.selectedBuy ? -1 : 1) * (this.options.diplomacyRoll - buySellDiploDc)) /
-                100.0
+                const buySellDiploMod = ((this.options.selectedBuy ? -1 : 1) * (this.options.diplomacyRoll - buySellDiploDc)) / 100.0
                 // finalGoodValue factors in all the mods at once
                 const buySellFinalValue = buySellGood.value + (buySellGood.value * (buySellDemandMod + buySellScarictyMod + buySellDiploMod))
                 this.options.buySellResult = {

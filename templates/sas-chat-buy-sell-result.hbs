@@ -1,0 +1,12 @@
+<div class="flexcol sas-chat-result">
+    {{#if buySellResult.buy}}
+        <h3>{{localize "SAS-TRADING.trade-menu.buy-sell.results.title-buy"}}</h3>
+    {{else}}
+        <h3>{{localize "SAS-TRADING.trade-menu.buy-sell.results.title-sell"}}</h3>
+    {{/if}}
+    <h4>{{selectedCity}} | {{buySellResult.good}}</h4>
+    <div class="flexrow">
+        <p>{{localize "SAS-TRADING.trade-menu.buy-sell.results.price-per-unit"}}:</p>
+        <p class="flex2">{{buySellResult.price}} {{currency}}</p>
+    </div>
+</div>

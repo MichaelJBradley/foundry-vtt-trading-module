@@ -64,6 +64,10 @@
                 }
             },
             "individual": {
+                "currency": {
+                    "name": "Currency",
+                    "hint": "The currency to use throughout the module. This is only for display purposes. Default: gp"
+                },
                 "gather-info-accuracy": {
                     "name": "Gather rumors accuracy",
                     "hint": "The base value for whether gather rumors is accurate. Default: 70"
@@ -79,6 +83,10 @@
                 "buy-sell-diplo": {
                     "name": "Buy/Sell diplomacy DC",
                     "hint": "The DC by which a buy or sell price increases or decreases. Default 25"
+                },
+                "buy-sell-chat": {
+                    "name": "Post buy/sell results",
+                    "hint": "Whether to post buy/sell results to the chat. Default: yes"
                 }
             }
         },
@@ -119,7 +127,8 @@
                     "base-value-title": "Base value",
                     "demand-mod-title": "Demand modifier",
                     "scarcity-mod-title": "Supply modifier",
-                    "diplo-mod-title": "Diplomacy check modifier"
+                    "diplo-mod-title": "Diplomacy check modifier",
+                    "price-per-unit": "Price per unit"
                 }
             },
             "notifications": {

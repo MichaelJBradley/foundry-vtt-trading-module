@@ -69,17 +69,20 @@ class SasTrading {
             MENU_BUY_SELL: `modules/${this.ID}/templates/sas-trading-menu-buy-sell.hbs`
         },
         CHAT: {
-            GATHER_INFO: `modules/${this.ID}/templates/sas-chat-gather-info-result.hbs`
+            GATHER_INFO: `modules/${this.ID}/templates/sas-chat-gather-info-result.hbs`,
+            BUY_SELL: `modules/${this.ID}/templates/sas-chat-buy-sell-result.hbs`
         }
     }
     static SETTINGS = {
         GOODS: 'goods',                               // type {SasGoods}
         BASE_GOODS: 'base-goods',                     // type {SasBaseGood}
         CITIES: 'cities',                             // type {SasCities}
+        CURRENCY: 'currency',                         // type {string}
         GATHER_INFO_ACCURACY: 'gather-info-accuracy', // type {number}
         GATHER_INFO_DIPLO_DC: 'gather-info-diplo',    // type {number}
         GATHER_INFO_CHAT: 'gather-info-chat',         // type {boolean}
         BUY_SELL_DIPLO_DC: 'buy-sell-diplo',          // type {number}
+        BUY_SELL_CHAT: 'buy-sell-chat',               // type {boolean}
         // Lang refs
         CONFIG: 'config',
         CONFIG_GOODS: 'goods-menu',
@@ -181,6 +184,15 @@ class SasTrading {
             type: SasTradingGoodConfig,
             restricted: true
         })
+        game.settings.register(this.ID, this.SETTINGS.CURRENCY, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.CURRENCY}.name`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.CURRENCY}.hint`,
+            scope: 'world',
+            config: true,
+            type: String,
+            default: 'gp',
+            onChange: value => this.setSetting(this.SETTINGS.CURRENCY, value)
+        })
         game.settings.register(this.ID, this.SETTINGS.GATHER_INFO_ACCURACY, {
             name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.GATHER_INFO_ACCURACY}.name`,
             hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.GATHER_INFO_ACCURACY}.hint`,
@@ -216,6 +228,15 @@ class SasTrading {
             type: Number,
             default: 25,
             onChange: value => this.setSetting(this.SETTINGS.BUY_SELL_DIPLO_DC, value)
+        })
+        game.settings.register(this.ID, this.SETTINGS.BUY_SELL_CHAT, {
+            name: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.BUY_SELL_CHAT}.name`,
+            hint: `${SasTrading.LANG}.settings.${SasTrading.SETTINGS.INDIVIDUAL}.${SasTrading.SETTINGS.BUY_SELL_CHAT}.hint`,
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true,
+            onChange: value => this.setSetting(this.SETTINGS.BUY_SELL_CHAT, value)
         })
     }
 
@@ -1085,7 +1106,8 @@ class SasTradingMenu extends FormApplication {
                 }
             ],
             activeTab: this.TABS.OVERVIEW,
-            selectedBuy: true
+            selectedBuy: true,
+            currency: SasTrading.getSetting(SasTrading.SETTINGS.CURRENCY)
         }
         const selectedCity = SasTradingCitiesData.allCitiesSorted[0]
         const updatedOverrides = this.updateSelectedOptions(selectedCity, undefined, overrides)
@@ -1107,7 +1129,8 @@ class SasTradingMenu extends FormApplication {
             diplomacyRoll: options.diplomacyRoll,
             selectedBuy: options.selectedBuy,
             gatherInfoResult: options.gatherInfoResult,
-            buySellResult: options.buySellResult
+            buySellResult: options.buySellResult,
+            currency: SasTrading.getSetting(SasTrading.SETTINGS.CURRENCY)
         }
     }
 
@@ -1152,6 +1175,9 @@ class SasTradingMenu extends FormApplication {
     async _handleButtonClick(event) {
         const clickedElement = $(event.currentTarget)
         const action = clickedElement.data()?.action
+        
+        // Right now, currency is only displayed after a button click, so it needs to be updated here
+        this.options.currency = SasTrading.getSetting(SasTrading.SETTINGS.CURRENCY)
 
         switch (action) {
             case 'gatherInfo-roll':
@@ -1260,6 +1286,12 @@ class SasTradingMenu extends FormApplication {
                     diploMod: buySellDiploMod
                 }
                 this.render()
+                if (SasTrading.getSetting(SasTrading.SETTINGS.BUY_SELL_CHAT)) {
+                    ChatMessage.create({
+                        content: await renderTemplate(SasTrading.TEMPLATES.CHAT.BUY_SELL, this.options),
+                        speaker: { alias: SasTrading.localize(`${SasTrading.LANG}.module-short`) }
+                    })
+                }
                 break
             case 'buySell-close':
                 this.options.buySellResult = undefined

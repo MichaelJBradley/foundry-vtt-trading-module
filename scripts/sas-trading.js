@@ -375,7 +375,7 @@ class SasTradingGoodData {
         if (!good.id) {
             good.id = this.goodId(good.name, good.city)
         } else if (good.id !== this.goodId(good.name, good.city)) {
-            SasTrading.error(false, 'good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
+            SasTrading.error('good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
             return
         }
 
@@ -401,13 +401,13 @@ class SasTradingGoodData {
     static createGoods(goods) {
         const goodsData = Object.fromEntries(goods.map(good => {
             if (!good.name || !good.city) {
-                SasTrading.error(false, 'good must have at least name and city properties', good)
+                SasTrading.error('good must have at least name and city properties', good)
                 return
             }
             if (!good.id) {
                 good.id = this.goodId(good.name, good.city)
             } else if (good.id !== this.goodId(good.name, good.city)) {
-                SasTrading.error(false, 'good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
+                SasTrading.error('good.id "', good.id, '" does not match expected id:', this.goodId(good.name, good.city))
                 return
             }
 
@@ -770,6 +770,8 @@ class SasTradingGoodConfig extends FormApplication {
                     return {
                         name: baseGood.name,
                         city: autoCreateSelectedCity,
+                        demand: SasTradingGoodData.demand.HIGH,
+                        scarcity: SasTradingGoodData.scarcity.RARE
                     }
                 })
                 SasTradingGoodData.createGoods(autoCreatedGoods)

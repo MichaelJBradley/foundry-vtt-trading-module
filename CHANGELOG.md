@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Using auto create to configure in trade goods for a city preventing the trade menu from opening
+* Auto create trade goods for a city preventing the trade menu from opening
 
 ## [1.0.0]
 
